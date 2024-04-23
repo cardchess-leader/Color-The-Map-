@@ -1,0 +1,270 @@
+.flag-row {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: space-around;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-right: 100px;
+    padding-left: 100px;
+}
+
+.flag-item {
+    flex-grow: 0;
+    width: 100px;
+    height: 100px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    background-color: rgba(255, 255, 255, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.flag-marker {
+    flex-grow: 1;
+    position: absolute;
+    top: -20px;
+    right: -35px;
+    width: 70px;
+    height: 70px;
+}
+
+.flag-marker-camera {
+    background-image: url('project://database/Assets/Images/Icons/video.png?fileID=2800000&guid=c2286ba4b82029c469b4b5de77a2fff1&type=3#video');
+    -unity-background-image-tint-color: rgb(255, 167, 0);
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.flag-marker-clear {
+    background-image: url('project://database/Assets/Images/Icons/check-circle.png?fileID=2800000&guid=dd15b2476d7880a4daf4681a1b209783&type=3#check-circle');
+    -unity-background-image-tint-color: rgb(76, 255, 0);
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.flag-marker-lock {
+    background-image: url('project://database/Assets/Images/Icons/lock.png?fileID=2800000&guid=7ac7b28f6f2f1c648ad9253e6056dfea&type=3#lock');
+    -unity-background-image-tint-color: rgb(128, 128, 128);
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.footer-icon {
+    width: 120px;
+    height: 120px;
+    -unity-background-image-tint-color: rgb(77, 77, 77);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.translate-down {
+    translate: 0 100%;
+}
+
+Button {
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    width: 100%;
+    height: 100%;
+    transition-duration: 0.4s;
+}
+
+Button:active {
+    opacity: 0.7;
+    transition-duration: 0.15s;
+}
+
+#PaletteItem .paint-brush {
+    background-color: rgba(0, 0, 0, 0);
+    width: 100px;
+    height: 100px;
+    margin-right: 50px;
+    background-image: url('project://database/Assets/Images/Icons/paint.png?fileID=2800000&guid=7253c77fe5137024ea2147174a67e869&type=3#paint');
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+}
+
+.palette-item-odd {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.palette-item-even {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.palette-item.palette-item-select #Checkmark {
+    visibility: visible;
+}
+
+.palette-item #Checkmark {
+    visibility: hidden;
+}
+
+.setting-item {
+    flex-direction: row;
+    height: 250px;
+    padding-left: 200px;
+}
+
+.setting-item-text-container {
+    flex-grow: 1;
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: 0;
+    border-bottom-width: 5px;
+    border-left-color: rgba(128, 128, 128, 0.5);
+    border-right-color: rgba(128, 128, 128, 0.5);
+    border-top-color: rgba(128, 128, 128, 0.5);
+    border-bottom-color: rgba(128, 128, 128, 0.5);
+    padding-top: 30px;
+    padding-right: 100px;
+    padding-bottom: 0;
+}
+
+.setting-item-text {
+    font-size: 55px;
+    -unity-font-style: bold;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    color: rgb(77, 77, 77);
+}
+
+.setting-item-icon-container {
+    flex-grow: 0;
+    width: 250px;
+    height: 250px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.setting-item-icon-container2 {
+    width: 120px;
+    height: 120px;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    background-color: rgb(186, 102, 255);
+    align-items: center;
+    justify-content: center;
+}
+
+.setting-item-icon {
+    width: 60%;
+    height: 60%;
+    background-image: url('project://database/Assets/Images/Icons/volume.png?fileID=2800000&guid=1e9195e6c1782e94387d8b3d26a5859d&type=3#volume');
+}
+
+.consent-agree-btn {
+    width: auto;
+    height: auto;
+    font-size: 50px;
+    -unity-font-style: bold;
+    padding-top: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+    padding-left: 50px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    background-color: rgb(21, 204, 21);
+    color: rgb(255, 255, 255);
+}
+
+.translate-right {
+    translate: 100% 0;
+}
+
+.rank-container {
+    flex-grow: 1;
+    background-color: rgb(255, 255, 255);
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    margin-top: 25px;
+    margin-bottom: 50px;
+    margin-right: 50px;
+    margin-left: 50px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+}
+
+#RankTextField #unity-text-input {
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    background-color: rgb(255, 255, 255);
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+    padding-top: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+}
+
+.settings-subpage-layout {
+    flex-grow: 1;
+    background-color: rgb(255, 255, 255);
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    margin-top: 25px;
+    margin-bottom: 50px;
+    margin-right: 50px;
+    margin-left: 50px;
+}
+
+.mb-25 {
+    margin-bottom: 25px;
+}
+
+.scale-to-zero {
+    scale: 0 0;
+}
+
+.screen {
+}

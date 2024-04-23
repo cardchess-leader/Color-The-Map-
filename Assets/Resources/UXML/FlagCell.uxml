@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/USS/UITK.uss?fileID=7433441132597879392&amp;guid=28b1ca9a235f7d94bb9bc793d5111b58&amp;type=3#UITK" />
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" class="flag-item" style="overflow: visible; background-image: resource(&apos;Images/Flags/argentina&apos;);">
+        <ui:VisualElement name="Marker" picking-mode="Ignore" class="flag-marker" />
+    </ui:Button>
+</ui:UXML>

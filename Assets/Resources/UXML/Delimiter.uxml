@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/USS/UITK.uss?fileID=7433441132597879392&amp;guid=28b1ca9a235f7d94bb9bc793d5111b58&amp;type=3#UITK" />
+    <ui:VisualElement name="Delimiter" style="flex-grow: 1; flex-direction: row; align-items: center; margin-top: 70px; margin-bottom: 30px;">
+        <ui:VisualElement style="flex-grow: 1; margin-right: 50px; margin-left: 100px; background-color: rgb(76, 76, 76); height: 7px;" />
+        <ui:Label tabindex="-1" text="North America" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 50px; -unity-font-style: bold; color: rgb(77, 77, 77);" />
+        <ui:VisualElement name="VisualElement" style="flex-grow: 1; height: 7px; margin-top: 0; margin-right: 100px; margin-bottom: 0; margin-left: 50px; background-color: rgb(77, 77, 77);" />
+    </ui:VisualElement>
+</ui:UXML>
