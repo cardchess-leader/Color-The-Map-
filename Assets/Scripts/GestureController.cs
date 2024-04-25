@@ -34,8 +34,15 @@ public class GestureController : MonoBehaviour
     {
         if (gesture.State == GestureRecognizerState.Ended)
         {
-            DebugText("Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
-            GameManager.instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
+            DebugText("Test - Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
+            if (Tutorial.instance.enabled)
+            {
+                Tutorial.instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
+            }
+            else
+            {
+                GameManager.instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
+            }
         }
     }
 

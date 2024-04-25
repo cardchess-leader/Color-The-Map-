@@ -12,8 +12,9 @@ public class GameManager : MonoBehaviour
     public List<ThemeSO> themeList = new List<ThemeSO>();
     public GestureController gestureController;
     public GameObject mapContainer;
-    public List<GameObject> paintBrushSet = new List<GameObject>();
+    public GameObject[] paintBrushSet = new GameObject[4];
     public Color? selectedColor;
+    public GameObject tutorial;
     Camera mainCamera;
     Color[] regionsColor; // Subject Map's colors for each region
     MapSO mapSO; // Subject Map's MapSO
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     {
         InitializePlayerPref();
         SetTheme(0, true);
+        RunTutorial();
     }
     void Start()
     {
@@ -37,6 +39,13 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("ThemeIndex", 0);
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
+        }
+    }
+    void RunTutorial()
+    {
+        if (PlayerPrefs.GetInt("TutorialViewed", 0) == 0)
+        {
+            tutorial.SetActive(true);
         }
     }
     public void SetTheme(int themeIndex = 0, bool update = false) // -1 means just use playerpref value, no update //

@@ -335,11 +335,6 @@ namespace Hyperbyte.Ads
                     }
                 }
 #endif
-                if (consentDialogueRequired)
-                {
-                    UIController.Instance.ShowConsentDialogue();
-                    return;
-                }
             }
             else
             {
