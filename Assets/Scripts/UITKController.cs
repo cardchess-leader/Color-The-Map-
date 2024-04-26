@@ -7,7 +7,20 @@ using UnityEngine.UIElements;
 
 public class UITKController : MonoBehaviour
 {
+    public static UITKController instance;
     VisualElement root;
+    VisualElement mainScreen;
+    VisualElement themeScreen;
+    VisualElement flagListScreen;
+    VisualElement settingsScreen;
+    VisualElement aboutScreen;
+    VisualElement dataSettingsScreen;
+    VisualElement statsScreen;
+    VisualElement statsCountryScreen;
+    void Awake()
+    {
+        instance = this;
+    }
     void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
@@ -20,14 +33,14 @@ public class UITKController : MonoBehaviour
     void InitializeHandler()
     {
         // Cache references to frequently used elements
-        VisualElement mainScreen = root.Q("MainScreen");
-        VisualElement themeScreen = root.Q("ThemeScreen");
-        VisualElement flagListScreen = root.Q("FlagListScreen");
-        VisualElement settingsScreen = root.Q("SettingsScreen");
-        VisualElement aboutScreen = root.Q("AboutScreen");
-        VisualElement dataSettingsScreen = root.Q("DataSettingsScreen");
-        VisualElement statsScreen = root.Q("StatsScreen");
-        VisualElement statsCountryScreen = root.Q("StatsCountryScreen");
+        mainScreen = root.Q("MainScreen");
+        themeScreen = root.Q("ThemeScreen");
+        flagListScreen = root.Q("FlagListScreen");
+        settingsScreen = root.Q("SettingsScreen");
+        aboutScreen = root.Q("AboutScreen");
+        dataSettingsScreen = root.Q("DataSettingsScreen");
+        statsScreen = root.Q("StatsScreen");
+        statsCountryScreen = root.Q("StatsCountryScreen");
 
         // Close Button Click Listeners
         flagListScreen.Q<Button>("CloseBtn").clicked += () => flagListScreen.AddToClassList("translate-down");
@@ -189,4 +202,30 @@ public class UITKController : MonoBehaviour
             }
         }
     }
+    public void ShowUISegment(string segmentName)
+    {
+        // StartCoroutine(ShowUISegmentCoroutine(segmentName));
+        switch (segmentName)
+        {
+            case "footer":
+                mainScreen.Q("Footer").RemoveFromClassList("translate-down");
+                break;
+            case "select-map":
+                flagListScreen.RemoveFromClassList("translate-down");
+                break;
+        }
+    }
+    // IEnumerator ShowUISegmentCoroutine(string segmentName)
+    // {
+    //     yield return null;
+    //     switch (segmentName)
+    //     {
+    //         case "footer":
+    //             mainScreen.Q("Footer").RemoveFromClassList("translate-down");
+    //             break;
+    //         case "select-map":
+    //             flagListScreen.RemoveFromClassList("translate-down");
+    //             break;
+    //     }
+    // }
 }

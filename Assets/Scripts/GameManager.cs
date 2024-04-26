@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public List<CountrySO> countryList = new List<CountrySO>();
     public List<ThemeSO> themeList = new List<ThemeSO>();
+    public GameObject canvas;
     public GestureController gestureController;
     public GameObject mapContainer;
     public GameObject[] paintBrushSet = new GameObject[4];
@@ -25,8 +26,7 @@ public class GameManager : MonoBehaviour
     void OnEnable()
     {
         InitializePlayerPref();
-        SetTheme(0, true);
-        RunTutorial();
+        Initialize();
     }
     void Start()
     {
@@ -39,14 +39,33 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("ThemeIndex", 0);
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
+            PlayerPrefs.SetInt("TutorialViewed", 0);
         }
     }
-    void RunTutorial()
+    void Initialize()
     {
         if (PlayerPrefs.GetInt("TutorialViewed", 0) == 0)
         {
             tutorial.SetActive(true);
         }
+        else
+        {
+            InitializeGame();
+        }
+    }
+    public void InitializeGame(bool tutorialEnd = false)
+    {
+        canvas.SetActive(true);
+        SetTheme(0, true);
+        UITKController.instance.ShowUISegment("footer");
+        if (tutorialEnd)
+        {
+            UITKController.instance.ShowUISegment("select-map");
+        }
+    }
+    public void EndTutorial()
+    {
+        PlayerPrefs.SetInt("TutorialViewed", 1);
     }
     public void SetTheme(int themeIndex = 0, bool update = false) // -1 means just use playerpref value, no update //
     {
@@ -80,6 +99,9 @@ public class GameManager : MonoBehaviour
     {
         Vector2 touchPos = mainCamera.ScreenToWorldPoint(new Vector2(coordX, coordY));
         RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero);
+        Debug.Log("123");
+        Debug.Log(hit.collider != null);
+        Debug.Log(selectedColor.HasValue);
         if (hit.collider != null && selectedColor.HasValue)
         {
             string colliderName = hit.collider.gameObject.name;
@@ -124,7 +146,7 @@ public class GameManager : MonoBehaviour
             Destroy(mapContainer.transform.GetChild(0).gameObject);
         }
         GameObject countryMap = Instantiate(countrySO.countryMapPrefab, Vector3.zero, Quaternion.identity, mapContainer.transform);
-        gestureController.targetMap = countryMap;
+        // gestureController.targetMap = countryMap;
         mapSO = countryMap.GetComponent<CountryPrefab>().mapSO;
         regionsColor = new Color[mapSO.adjMatrix.Count];
     }

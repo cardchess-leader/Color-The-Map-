@@ -7,10 +7,11 @@ using TMPro;
 public class Tutorial : MonoBehaviour
 {
     public static Tutorial instance;
+    public GameObject tutorialCanvas;
     public GameObject[] paintArr = new GameObject[4];
-    public GameObject[] paintPointerArr = new GameObject[4];
     public GameObject[] regionPointerArr = new GameObject[4];
     public TMP_Text topMessage;
+    public TMP_Text centerMessage;
     Color selectedColor;
     Camera mainCamera;
     int nextTutorialStep = 0;
@@ -45,9 +46,9 @@ public class Tutorial : MonoBehaviour
     public void SelectColor(int index)
     {
         selectedColor = paintArr[index].GetComponent<Image>().color;
-        foreach (GameObject brush in paintArr)
+        foreach (GameObject paint in paintArr)
         {
-            brush.transform.GetChild(0).GetComponent<Image>().enabled = false;
+            paint.transform.GetChild(0).GetComponent<Image>().enabled = false;
         }
         paintArr[index].transform.GetChild(0).GetComponent<Image>().enabled = true;
         StartCoroutine(ShowNextTutorialStep("PaintTouch"));
@@ -59,6 +60,7 @@ public class Tutorial : MonoBehaviour
         {
             case 0: // current tutorial step
                 // Paint 1
+                tutorialCanvas.SetActive(true);
                 DeactivateAll();
                 ActivatePaintPointer(0);
                 topMessage.text = "Pick a color!";
@@ -135,22 +137,31 @@ public class Tutorial : MonoBehaviour
                 if (inputSource == "MapTouch")
                 {
                     // Tutorial Over!
-                    DeactivateAll();
-                    topMessage.text = "Excellent!\nEnd of tutorial!";
+                    regionPointerArr[3].SetActive(false);
+                    topMessage.text = "Excellent!\nReady to color real maps?";
+                    centerMessage.gameObject.SetActive(true);
                     nextTutorialStep = 9;
-                    // Logic To End Tutorial //
                 }
                 break;
-
+            case 9:
+                if (inputSource == "MapTouch")
+                {
+                    // Logic To End Tutorial //
+                    gameObject.SetActive(false);
+                    tutorialCanvas.SetActive(false);
+                    GameManager.instance.EndTutorial();
+                    GameManager.instance.InitializeGame(true);
+                }
+                break;
         }
         yield return null;
     }
     void DeactivateAll()
     {
-        foreach (GameObject paintPointer in paintPointerArr)
+        foreach (GameObject paint in paintArr)
         {
-            paintPointer.transform.parent.GetComponent<Button>().enabled = false;
-            paintPointer.SetActive(false);
+            paint.GetComponent<Button>().enabled = false;
+            paint.transform.Find("Tutorial-Pointer").gameObject.SetActive(false);
         }
         foreach (GameObject regionPointer in regionPointerArr)
         {
@@ -161,8 +172,8 @@ public class Tutorial : MonoBehaviour
 
     void ActivatePaintPointer(int index)
     {
-        paintPointerArr[index].transform.parent.GetComponent<Button>().enabled = true;
-        paintPointerArr[index].SetActive(true);
+        paintArr[index].GetComponent<Button>().enabled = true;
+        paintArr[index].transform.Find("Tutorial-Pointer").gameObject.SetActive(true);
     }
 
     void ActivateRegionPointer(int index)
