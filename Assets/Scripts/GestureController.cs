@@ -25,8 +25,6 @@ public class GestureController : MonoBehaviour
     private PanGestureRecognizer panGesture;
     private ScaleGestureRecognizer scaleGesture;
     private RotateGestureRecognizer rotateGesture;
-    public float minZoom = 0.5f; // Minimum zoom limit
-    public float maxZoom = 10f;  // Maximum zoom limit
     public float zoomSensitivity = 1; // Sensitivity of the zoom
     private Vector2 previousPinchPosition; // Zoom Gesture Related
     private Vector3 previousPinchWorldPosition;
@@ -44,7 +42,6 @@ public class GestureController : MonoBehaviour
     {
         if (gesture.State == GestureRecognizerState.Ended)
         {
-            DebugText("Test - Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
             if (Tutorial.instance != null && Tutorial.instance.enabled)
             {
                 Tutorial.instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
@@ -110,7 +107,7 @@ public class GestureController : MonoBehaviour
         {
             // Calculate the factor of zoom based on the scale multiplier
             float scaleFactor = 1 + (scaleGesture.ScaleMultiplier - 1) * zoomSensitivity;
-            float newOrthographicSize = Mathf.Clamp(targetCamera.orthographicSize / scaleFactor, minZoom, maxZoom);
+            float newOrthographicSize = Mathf.Clamp(targetCamera.orthographicSize / scaleFactor, GameManager.instance.minZoom, GameManager.instance.maxZoom);
 
             // Calculate the new pinch center in screen coordinates
             Vector2 pinchCenter = new Vector2(gesture.FocusX, gesture.FocusY);

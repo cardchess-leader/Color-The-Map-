@@ -23,5 +23,11 @@ public class CountrySO : ScriptableObject
     public string ctryName;
     public Continent continent;
     public Terms terms;
+    public float maxZoom = 2;
     public GameObject countryMapPrefab;
+    public MapSO mapSO;
+    public int population;
+    public float area;
+    [TextArea(1, 8)]
+    public string funFact;
 }

@@ -85,6 +85,9 @@ public class UITKController : MonoBehaviour
     {
         if (evt.target is VisualElement element && element.userData is string ctryName)
         {
+            mainScreen.Q<Label>("Title").text = ctryName;
+            Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
+            mainScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
             GameManager.instance.SetCountryMap(ctryName);
             root.Q("FlagListScreen").AddToClassList("translate-down");
         }
@@ -93,10 +96,21 @@ public class UITKController : MonoBehaviour
     {
         if (evt.target is VisualElement element && element.userData is string ctryName)
         {
-            // GameManager.instance.SetCountryMap(ctryName);
-            Debug.Log("ctryName is: " + ctryName);
-            root.Q("StatsCountryScreen").RemoveFromClassList("scale-to-zero");
+            SetStatsCtryInfo(ctryName);
+            statsCountryScreen.RemoveFromClassList("scale-to-zero");
         }
+    }
+    void SetStatsCtryInfo(string ctryName)
+    {
+        CountrySO countrySO = GameManager.instance.GetCountrySO(ctryName);
+        Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
+        statsCountryScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
+        statsCountryScreen.Q<Label>("Title").text = ctryName;
+        statsCountryScreen.Q<Label>("NumOfRegions").text = $"# of regions: {countrySO.mapSO.numRegions}";
+        string area = countrySO.area.ToString("N0"), population = countrySO.population.ToString("N0");
+        statsCountryScreen.Q<Label>("Area").text = $"Area: {area} km^2({GameManager.instance.GetAreaRank(ctryName)}/{GameManager.instance.countryList.Count})";
+        statsCountryScreen.Q<Label>("Population").text = $"Population: {population}({GameManager.instance.GetPopulationRank(ctryName)}/{GameManager.instance.countryList.Count})";
+        statsCountryScreen.Q<Label>("FunFact").text = $"{countrySO.funFact}";
     }
     IEnumerator InitializeThemeList()
     {
@@ -204,7 +218,6 @@ public class UITKController : MonoBehaviour
     }
     public void ShowUISegment(string segmentName)
     {
-        // StartCoroutine(ShowUISegmentCoroutine(segmentName));
         switch (segmentName)
         {
             case "footer":
@@ -215,17 +228,4 @@ public class UITKController : MonoBehaviour
                 break;
         }
     }
-    // IEnumerator ShowUISegmentCoroutine(string segmentName)
-    // {
-    //     yield return null;
-    //     switch (segmentName)
-    //     {
-    //         case "footer":
-    //             mainScreen.Q("Footer").RemoveFromClassList("translate-down");
-    //             break;
-    //         case "select-map":
-    //             flagListScreen.RemoveFromClassList("translate-down");
-    //             break;
-    //     }
-    // }
 }

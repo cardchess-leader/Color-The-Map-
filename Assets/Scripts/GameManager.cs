@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     public GameObject[] paintBrushSet = new GameObject[4];
     public Color? selectedColor;
     public GameObject tutorial;
+    [System.NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
+    [System.NonSerialized] public float maxZoom = 10f;  // Maximum zoom limit
     Camera mainCamera;
     Color[] regionsColor; // Subject Map's colors for each region
     MapSO mapSO; // Subject Map's MapSO
@@ -99,15 +101,11 @@ public class GameManager : MonoBehaviour
     {
         Vector2 touchPos = mainCamera.ScreenToWorldPoint(new Vector2(coordX, coordY));
         RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero);
-        Debug.Log("123");
-        Debug.Log(hit.collider != null);
-        Debug.Log(selectedColor.HasValue);
         if (hit.collider != null && selectedColor.HasValue)
         {
             string colliderName = hit.collider.gameObject.name;
             if (colliderName.Length <= 6 || !int.TryParse(colliderName.Substring(6), out int targetIndex))
             {
-                Debug.Log("Invalid target index or collider name.");
                 return;
             }
 
@@ -117,14 +115,12 @@ public class GameManager : MonoBehaviour
 
             if (indices.Any(adjIndex => adjIndex >= regionsColor.Length || regionsColor[adjIndex] == selectedColor.Value))
             {
-                Debug.Log("Invalid Color or index out of range!");
                 return;
             }
 
             SpriteRenderer renderer = hit.collider.GetComponent<SpriteRenderer>();
             if (renderer == null)
             {
-                Debug.Log("No SpriteRenderer found!");
                 return;
             }
 
@@ -136,18 +132,42 @@ public class GameManager : MonoBehaviour
     public void SetCountryMap(string ctryName)
     {
         // validation // 
-        CountrySO countrySO = GameManager.instance.countryList.FirstOrDefault(ctrySO => ctrySO.ctryName == ctryName);
+        CountrySO countrySO = GetCountrySO(ctryName);
         if (countrySO == null)
         {
             return;
         }
-        if (transform.childCount > 0)
+        if (mapContainer.transform.childCount > 0)
         {
             Destroy(mapContainer.transform.GetChild(0).gameObject);
         }
+        InitializeMainCamera();
         GameObject countryMap = Instantiate(countrySO.countryMapPrefab, Vector3.zero, Quaternion.identity, mapContainer.transform);
-        // gestureController.targetMap = countryMap;
-        mapSO = countryMap.GetComponent<CountryPrefab>().mapSO;
+        mapSO = countrySO.mapSO;
         regionsColor = new Color[mapSO.adjMatrix.Count];
+        maxZoom = countrySO.maxZoom;
+    }
+
+    void InitializeMainCamera()
+    {
+        mainCamera.transform.position = new Vector3(0, 0, -10); // Example position
+        mainCamera.transform.rotation = Quaternion.Euler(0f, 0f, 0f); // No rotation necessary in 2D, but just to be clear
+        mainCamera.orthographicSize = 5;
+    }
+
+    public CountrySO GetCountrySO(string ctryName)
+    {
+        return GameManager.instance.countryList.FirstOrDefault(ctrySO => ctrySO.ctryName == ctryName);
+    }
+
+    public int GetPopulationRank(string ctryName)
+    {
+        var sortedCountryList = countryList.OrderByDescending(ctry => ctry.population).ToList();
+        return sortedCountryList.IndexOf(GetCountrySO(ctryName)) + 1;
+    }
+    public int GetAreaRank(string ctryName)
+    {
+        var sortedCountryList = countryList.OrderByDescending(ctry => ctry.area).ToList();
+        return sortedCountryList.IndexOf(GetCountrySO(ctryName)) + 1;
     }
 }
