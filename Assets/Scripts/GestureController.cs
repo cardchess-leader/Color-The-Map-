@@ -40,6 +40,10 @@ public class GestureController : MonoBehaviour
 
     private void TapGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
+        if (UITKController.instance.IsScreenOverlay())
+        {
+            return;
+        }
         if (gesture.State == GestureRecognizerState.Ended)
         {
             if (Tutorial.instance != null && Tutorial.instance.enabled)
@@ -63,6 +67,10 @@ public class GestureController : MonoBehaviour
 
     private void PanGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
+        if (UITKController.instance.IsScreenOverlay())
+        {
+            return;
+        }
         if (gesture.State == GestureRecognizerState.Began)
         {
             lastPanPosition = new Vector2(gesture.FocusX, gesture.FocusY);
@@ -99,6 +107,10 @@ public class GestureController : MonoBehaviour
 
     private void ScaleGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
+        if (UITKController.instance.IsScreenOverlay())
+        {
+            return;
+        }
         if (gesture.State == GestureRecognizerState.Began)
         {
             previousPinchPosition = new Vector2(gesture.FocusX, gesture.FocusY); // Store the initial pinch position in screen coordinates
@@ -107,7 +119,7 @@ public class GestureController : MonoBehaviour
         {
             // Calculate the factor of zoom based on the scale multiplier
             float scaleFactor = 1 + (scaleGesture.ScaleMultiplier - 1) * zoomSensitivity;
-            float newOrthographicSize = Mathf.Clamp(targetCamera.orthographicSize / scaleFactor, GameManager.instance.minZoom, GameManager.instance.maxZoom);
+            float newOrthographicSize = Mathf.Clamp(targetCamera.orthographicSize / scaleFactor, GameManager.instance.initialOrthographicSize / GameManager.instance.countrySO.maxZoom, GameManager.instance.initialOrthographicSize / GameManager.instance.minZoom);
 
             // Calculate the new pinch center in screen coordinates
             Vector2 pinchCenter = new Vector2(gesture.FocusX, gesture.FocusY);
@@ -139,10 +151,13 @@ public class GestureController : MonoBehaviour
 
     private void RotateGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
+        if (UITKController.instance.IsScreenOverlay())
+        {
+            return;
+        }
         if (gesture.State == GestureRecognizerState.Began)
         {
             previousRotatePosition = new Vector2(gesture.FocusX, gesture.FocusY); // Store the initial rotate position in screen coordinates
-                                                                                  // Convert screen position of the gesture focus to a world point considering the camera's near clip plane
             rotationCenter = targetCamera.ScreenToWorldPoint(new Vector3(previousRotatePosition.x, previousRotatePosition.y, targetCamera.nearClipPlane));
             rotationCenter.z = 0; // Ensure the rotation center is in the correct plane
         }

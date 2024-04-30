@@ -434,7 +434,7 @@ namespace DigitalRubyShared
         {
             if (gesture.State == GestureRecognizerState.Ended)
             {
-                UnityEngine.Debug.Log("Tap Gesture Ended");
+                // UnityEngine.Debug.Log("Tap Gesture Ended");
             }
         }
 

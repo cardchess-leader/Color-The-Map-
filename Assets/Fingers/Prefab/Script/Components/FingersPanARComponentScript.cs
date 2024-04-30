@@ -214,8 +214,6 @@ namespace DigitalRubyShared
         {
             if (currentTarget == null && gesture.State == GestureRecognizerState.Ended && DoubleTapToResetRotation)
             {
-                Debug.Log("Double tap on fingers pan ar component script ended");
-
                 if (SelectCurrentTarget(gesture.FocusX, gesture.FocusY) != null)
                 {
                     foreach (KeyValuePair<Transform, OrigState> kv in origStates)
@@ -235,8 +233,6 @@ namespace DigitalRubyShared
         {
             if (currentTarget == null && gesture.State == GestureRecognizerState.Ended && TripleTapToDestroy)
             {
-                Debug.Log("Tripe tap on fingers pan ar component script ended");
-
                 if (SelectCurrentTarget(gesture.FocusX, gesture.FocusY) != null)
                 {
                     Destroy(currentTarget.gameObject);
@@ -249,8 +245,6 @@ namespace DigitalRubyShared
         {
             if (gesture.State == GestureRecognizerState.Began)
             {
-                Debug.Log("Long tap on fingers pan ar component script began");
-
                 SelectCurrentTarget(gesture.FocusX, gesture.FocusY);
                 PushGesture(gesture);
                 if (LongPressGestureBegan != null)

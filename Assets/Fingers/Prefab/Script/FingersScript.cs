@@ -539,7 +539,7 @@ namespace DigitalRubyShared
             //var panel = GameObject.FindObjectsOfType<UIDocumentPanelRaycaster>();
             //if (panel != null)
             //{
-                //panel.Raycast(p, captureRaycastResults);
+            //panel.Raycast(p, captureRaycastResults);
             //}
 
             // determine what game object, if any should capture the gesture
@@ -561,7 +561,8 @@ namespace DigitalRubyShared
                             // this specific object stops any further pass through checks underneath
                             list.Add(r.gameObject);
                             return;
-                        } break;
+                        }
+                        break;
 
                     case CaptureResult.Default:
                         // if forcing pass through, only add if matches a platform specific view
@@ -1435,7 +1436,6 @@ namespace DigitalRubyShared
             if (DeviceInfo.PixelsPerInch > 0)
             {
                 DeviceInfo.UnitMultiplier = DeviceInfo.PixelsPerInch;
-                Debug.Log("Detected DPI of " + DeviceInfo.PixelsPerInch);
             }
             else
             {
@@ -1452,7 +1452,7 @@ namespace DigitalRubyShared
 
 #endif
 
-                Debug.LogError("Unable to determine DPI, using default DPI of " + DefaultDPI);
+                    Debug.LogError("Unable to determine DPI, using default DPI of " + DefaultDPI);
             }
 
             // set the main thread callback so gestures can callback after a delay

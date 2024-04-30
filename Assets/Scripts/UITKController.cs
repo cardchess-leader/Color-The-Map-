@@ -228,4 +228,19 @@ public class UITKController : MonoBehaviour
                 break;
         }
     }
+    public bool IsScreenOverlay()
+    {
+        // Create an array of all screens to check
+        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryScreen };
+
+        // Loop through each screen and check the classes
+        foreach (VisualElement screen in screens)
+        {
+            if (screen.ClassListContains("translate-down") || screen.ClassListContains("scale-to-zero"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
