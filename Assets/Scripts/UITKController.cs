@@ -17,6 +17,7 @@ public class UITKController : MonoBehaviour
     VisualElement dataSettingsScreen;
     VisualElement statsScreen;
     VisualElement statsCountryScreen;
+    bool isOverlayScreenTransitioning = false;
     void Awake()
     {
         instance = this;
@@ -90,7 +91,14 @@ public class UITKController : MonoBehaviour
             mainScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
             GameManager.instance.SetCountryMap(ctryName);
             root.Q("FlagListScreen").AddToClassList("translate-down");
+            StartCoroutine(OverlayScreenTransitionCoroutine());
         }
+    }
+    IEnumerator OverlayScreenTransitionCoroutine()
+    {
+        isOverlayScreenTransitioning = true;
+        yield return new WaitForSeconds(0.5f);
+        isOverlayScreenTransitioning = false;
     }
     void OnChooseStatsCtry(ClickEvent evt)
     {
@@ -230,14 +238,19 @@ public class UITKController : MonoBehaviour
     }
     public bool IsScreenOverlay()
     {
+        if (isOverlayScreenTransitioning)
+        {
+            return true;
+        }
         // Create an array of all screens to check
         VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryScreen };
 
         // Loop through each screen and check the classes
         foreach (VisualElement screen in screens)
         {
-            if (screen.ClassListContains("translate-down") || screen.ClassListContains("scale-to-zero"))
+            if (!(screen.ClassListContains("translate-down") || screen.ClassListContains("scale-to-zero") || screen.ClassListContains("translate-right")))
             {
+                Debug.Log("true");
                 return true;
             }
         }
