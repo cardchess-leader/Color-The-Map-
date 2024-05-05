@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Hyperbyte;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager instance;
     public List<CountrySO> countryList = new List<CountrySO>();
     public List<ThemeSO> themeList = new List<ThemeSO>();
     public GameObject canvas;
@@ -20,14 +20,11 @@ public class GameManager : MonoBehaviour
     public Camera cameraToCapture;
     public RenderTexture renderTexture;
     public float initialOrthographicSize;
+    public AudioClip uiBtnClickSound;
     [System.NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
     [System.NonSerialized] public CountrySO countrySO;
     Camera mainCamera;
     Color[] regionsColor; // Subject Map's colors for each region
-    void Awake()
-    {
-        instance = this;
-    }
     void OnEnable()
     {
         InitializePlayerPref();
@@ -63,10 +60,10 @@ public class GameManager : MonoBehaviour
     {
         canvas.SetActive(true);
         SetTheme(0, true);
-        UITKController.instance.ShowUISegment("footer");
+        UITKController.Instance.ShowUISegment("footer");
         if (tutorialEnd)
         {
-            UITKController.instance.ShowUISegment("select-map");
+            UITKController.Instance.ShowUISegment("select-map");
         }
     }
     public void EndTutorial()
@@ -159,7 +156,7 @@ public class GameManager : MonoBehaviour
 
     public CountrySO GetCountrySO(string ctryName)
     {
-        return GameManager.instance.countryList.FirstOrDefault(ctrySO => ctrySO.ctryName == ctryName);
+        return countryList.FirstOrDefault(ctrySO => ctrySO.ctryName == ctryName);
     }
 
     public int GetPopulationRank(string ctryName)

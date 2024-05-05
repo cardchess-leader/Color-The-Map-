@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Hyperbyte;
 
-public class Tutorial : MonoBehaviour
+public class Tutorial : Singleton<Tutorial>
 {
-    public static Tutorial instance;
     public GameObject tutorialCanvas;
     public GameObject[] paintArr = new GameObject[4];
     public GameObject[] regionPointerArr = new GameObject[4];
@@ -15,10 +15,6 @@ public class Tutorial : MonoBehaviour
     Color selectedColor;
     Camera mainCamera;
     int nextTutorialStep = 0;
-    void Awake()
-    {
-        instance = this;
-    }
     void Start()
     {
         mainCamera = Camera.main;
@@ -149,8 +145,8 @@ public class Tutorial : MonoBehaviour
                     // Logic To End Tutorial //
                     gameObject.SetActive(false);
                     tutorialCanvas.SetActive(false);
-                    GameManager.instance.EndTutorial();
-                    GameManager.instance.InitializeGame(true);
+                    GameManager.Instance.EndTutorial();
+                    GameManager.Instance.InitializeGame(true);
                 }
                 break;
         }

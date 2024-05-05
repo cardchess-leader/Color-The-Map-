@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Hyperbyte;
 
-public class UITKController : MonoBehaviour
+public class UITKController : Singleton<UITKController>
 {
-    public static UITKController instance;
     VisualElement root;
     VisualElement mainScreen;
     VisualElement themeScreen;
@@ -18,10 +18,6 @@ public class UITKController : MonoBehaviour
     VisualElement statsScreen;
     VisualElement statsCountryScreen;
     bool isOverlayScreenTransitioning = false;
-    void Awake()
-    {
-        instance = this;
-    }
     void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
@@ -30,6 +26,7 @@ public class UITKController : MonoBehaviour
         StartCoroutine(InitializeCountryList());
         StartCoroutine(InitializeThemeList());
         StartCoroutine(InitializeStatsCountryList());
+        Helper.SetHapticToBtn(root, "ui-btn", false, GameManager.Instance.uiBtnClickSound);
     }
     void InitializeHandler()
     {
@@ -73,7 +70,7 @@ public class UITKController : MonoBehaviour
     {
         if (evt.target is VisualElement element && element.userData is int themeIndex)
         {
-            GameManager.instance.SetTheme(themeIndex);
+            GameManager.Instance.SetTheme(themeIndex);
             VisualElement themeContainer = root.Q("ThemeScreen").Q("ScrollContainer").Q("unity-content-container");
             foreach (VisualElement themeItem in themeContainer.Children())
             {
@@ -89,7 +86,7 @@ public class UITKController : MonoBehaviour
             mainScreen.Q<Label>("Title").text = ctryName;
             Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
             mainScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
-            GameManager.instance.SetCountryMap(ctryName);
+            GameManager.Instance.SetCountryMap(ctryName);
             root.Q("FlagListScreen").AddToClassList("translate-down");
             StartCoroutine(OverlayScreenTransitionCoroutine());
         }
@@ -110,24 +107,24 @@ public class UITKController : MonoBehaviour
     }
     void SetStatsCtryInfo(string ctryName)
     {
-        CountrySO countrySO = GameManager.instance.GetCountrySO(ctryName);
+        CountrySO countrySO = GameManager.Instance.GetCountrySO(ctryName);
         Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
         statsCountryScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
         statsCountryScreen.Q<Label>("Title").text = ctryName;
         statsCountryScreen.Q<Label>("NumOfRegions").text = $"# of regions: {countrySO.mapSO.numRegions}";
         string area = countrySO.area.ToString("N0"), population = countrySO.population.ToString("N0");
-        statsCountryScreen.Q<Label>("Area").text = $"Area: {area} km^2({GameManager.instance.GetAreaRank(ctryName)}/{GameManager.instance.countryList.Count})";
-        statsCountryScreen.Q<Label>("Population").text = $"Population: {population}({GameManager.instance.GetPopulationRank(ctryName)}/{GameManager.instance.countryList.Count})";
-        statsCountryScreen.Q<Label>("FunFact").text = $"{countrySO.funFact}";
+        statsCountryScreen.Q<Label>("Area").text = $"Area: {area} km^2({GameManager.Instance.GetAreaRank(ctryName)}/{GameManager.Instance.countryList.Count})";
+        statsCountryScreen.Q<Label>("Population").text = $"Population: {population}({GameManager.Instance.GetPopulationRank(ctryName)}/{GameManager.Instance.countryList.Count})";
+        statsCountryScreen.Q<Label>("FunFact").text = $"<line-height=150%>{countrySO.funFact}";
     }
     IEnumerator InitializeThemeList()
     {
         yield return null;
         ScrollView scrollview = root.Q("ThemeScreen").Q<ScrollView>();
         bool isOdd = true;
-        for (int i = 0; i < GameManager.instance.themeList.Count; i++)
+        for (int i = 0; i < GameManager.Instance.themeList.Count; i++)
         {
-            ThemeSO themeSO = GameManager.instance.themeList[i];
+            ThemeSO themeSO = GameManager.Instance.themeList[i];
             VisualElement paletteItem = Resources.Load<VisualTreeAsset>($"UXML/PaletteItem").CloneTree();
             paletteItem.AddToClassList(isOdd ? "palette-item-odd" : "palette-item-even");
             paletteItem.Q<Label>().text = themeSO.themeName;
@@ -155,7 +152,7 @@ public class UITKController : MonoBehaviour
             VisualElement delimiter = Resources.Load<VisualTreeAsset>($"UXML/Delimiter").CloneTree();
             delimiter.Q<Label>().text = continent.ToString().Replace("_", " ");
             scrollview.Add(delimiter);
-            List<CountrySO> countryList = GameManager.instance.countryList.Where(countrySO => countrySO.continent == continent).ToList();
+            List<CountrySO> countryList = GameManager.Instance.countryList.Where(countrySO => countrySO.continent == continent).ToList();
             for (int i = 0; i < Mathf.Ceil(countryList.Count / 5f); i++)
             {
                 VisualElement row = new VisualElement();
@@ -197,7 +194,7 @@ public class UITKController : MonoBehaviour
         ScrollView scrollview = root.Q("StatsScreen").Q<ScrollView>();
         foreach (CountrySO.Continent continent in Enum.GetValues(typeof(CountrySO.Continent)))
         {
-            List<CountrySO> countryList = GameManager.instance.countryList.Where(countrySO => countrySO.continent == continent).ToList();
+            List<CountrySO> countryList = GameManager.Instance.countryList.Where(countrySO => countrySO.continent == continent).ToList();
             for (int i = 0; i < Mathf.Ceil(countryList.Count / 5f); i++)
             {
                 VisualElement row = new VisualElement();
