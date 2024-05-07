@@ -247,7 +247,6 @@ public class UITKController : Singleton<UITKController>
         {
             if (!(screen.ClassListContains("translate-down") || screen.ClassListContains("scale-to-zero") || screen.ClassListContains("translate-right")))
             {
-                Debug.Log("true");
                 return true;
             }
         }
