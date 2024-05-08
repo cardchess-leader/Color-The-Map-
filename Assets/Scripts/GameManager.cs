@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Hyperbyte;
 
 public class GameManager : Singleton<GameManager>
@@ -25,6 +26,7 @@ public class GameManager : Singleton<GameManager>
     [System.NonSerialized] public CountrySO countrySO;
     Camera mainCamera;
     Color[] regionsColor; // Subject Map's colors for each region
+    bool stageCleared = false;
     void OnEnable()
     {
         InitializePlayerPref();
@@ -88,6 +90,7 @@ public class GameManager : Singleton<GameManager>
         {
             paintBrushSet[i].GetComponent<Image>().color = themeSO.themeColors[i];
         }
+        SetParticleSystemGradient(themeSO);
     }
     public void SelectColor(int index)
     {
@@ -127,9 +130,27 @@ public class GameManager : Singleton<GameManager>
 
             renderer.color = selectedColor.Value;
             regionsColor[targetIndex] = selectedColor.Value;
+            CheckForColoringComplete();
         }
     }
-
+    void CheckForColoringComplete()
+    {
+        bool complete = true;
+        for (int i = 1; i < regionsColor.Length; i++)
+        {
+            if (regionsColor[i] == new Color())
+            {
+                complete = false;
+                break;
+            }
+        }
+        if (complete && !stageCleared)
+        {
+            stageCleared = true;
+            UITKController.Instance.HandleStageClear(countrySO);
+            GameObject.Find("Confetti").GetComponent<ParticleSystem>().Play();
+        }
+    }
     public void SetCountryMap(string ctryName)
     {
         // validation // 
@@ -145,20 +166,18 @@ public class GameManager : Singleton<GameManager>
         InitializeMainCamera();
         GameObject countryMap = Instantiate(countrySO.countryMapPrefab, Vector3.zero, Quaternion.identity, mapContainer.transform);
         regionsColor = new Color[countrySO.mapSO.adjMatrix.Count];
+        stageCleared = false;
     }
-
     void InitializeMainCamera()
     {
         mainCamera.transform.position = new Vector3(0, 0, -10); // Example position
         mainCamera.transform.rotation = Quaternion.Euler(0f, 0f, 0f); // No rotation necessary in 2D, but just to be clear
         mainCamera.orthographicSize = 5;
     }
-
     public CountrySO GetCountrySO(string ctryName)
     {
         return countryList.FirstOrDefault(ctrySO => ctrySO.ctryName == ctryName);
     }
-
     public int GetPopulationRank(string ctryName)
     {
         var sortedCountryList = countryList.OrderByDescending(ctry => ctry.population).ToList();
@@ -213,4 +232,34 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    void SetParticleSystemGradient(ThemeSO themeSO)
+    {
+        var mainModule = GameObject.Find("Confetti").GetComponent<ParticleSystem>().main;
+
+        // Create a new gradient
+        Gradient gradient = new Gradient();
+
+        // Set up color keys
+        gradient.colorKeys = new GradientColorKey[]
+        {
+            new GradientColorKey(themeSO.themeColors[0], 0.25f),
+            new GradientColorKey(themeSO.themeColors[1], 0.5f),
+            new GradientColorKey(themeSO.themeColors[2], 0.75f),
+            new GradientColorKey(themeSO.themeColors[3], 1f)
+        };
+
+        // Set up alpha keys
+        gradient.alphaKeys = new GradientAlphaKey[]
+        {
+            new GradientAlphaKey(1.0f, 0.0f),
+            new GradientAlphaKey(1.0f, 1.0f)
+        };
+
+        gradient.mode = GradientMode.Fixed;
+
+        mainModule.startColor = new ParticleSystem.MinMaxGradient(gradient)
+        {
+            mode = ParticleSystemGradientMode.RandomColor
+        };
+    }
 }

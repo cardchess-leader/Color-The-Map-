@@ -17,6 +17,7 @@ public class UITKController : Singleton<UITKController>
     VisualElement dataSettingsScreen;
     VisualElement statsScreen;
     VisualElement statsCountryScreen;
+    VisualElement stageClearScreen;
     bool isOverlayScreenTransitioning = false;
     void OnEnable()
     {
@@ -39,6 +40,7 @@ public class UITKController : Singleton<UITKController>
         dataSettingsScreen = root.Q("DataSettingsScreen");
         statsScreen = root.Q("StatsScreen");
         statsCountryScreen = root.Q("StatsCountryScreen");
+        stageClearScreen = root.Q("StageClear");
 
         // Close Button Click Listeners
         flagListScreen.Q<Button>("CloseBtn").clicked += () => flagListScreen.AddToClassList("translate-down");
@@ -50,6 +52,9 @@ public class UITKController : Singleton<UITKController>
         dataSettingsScreen.Q<Button>("BackBtn").clicked += () => dataSettingsScreen.AddToClassList("translate-right");
         aboutScreen.Q<Button>("BackBtn").clicked += () => aboutScreen.AddToClassList("translate-right");
         statsScreen.Q<Button>("BackBtn").clicked += () => statsScreen.AddToClassList("translate-right");
+
+        // Continue Button Click Listener
+        stageClearScreen.Q<Button>("ContinueBtn").clicked += () => stageClearScreen.AddToClassList("hidden");
 
         // Register callback for click event on ScrollContainer
         flagListScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseCtry);
@@ -251,5 +256,13 @@ public class UITKController : Singleton<UITKController>
             }
         }
         return false;
+    }
+    public void HandleStageClear(CountrySO ctrySO)
+    {
+        stageClearScreen.RemoveFromClassList("hidden");
+        stageClearScreen.Q("TitleContainer").Q<Label>("Title").text = $"Congratulations!\nYou just colored all {ctrySO.mapSO.numRegions} regions!";
+        Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctrySO.ctryName}");
+        stageClearScreen.Q("Flag").style.backgroundImage = new StyleBackground(flagImage);
+        stageClearScreen.Q<Label>("FunFact").text = ctrySO.funFact;
     }
 }

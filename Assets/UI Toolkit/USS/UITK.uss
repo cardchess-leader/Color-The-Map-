@@ -37,19 +37,19 @@
 }
 
 .flag-marker-camera {
-    background-image: url('project://database/Assets/Images/Icons/video.png?fileID=2800000&guid=c2286ba4b82029c469b4b5de77a2fff1&type=3#video');
+    background-image: url("project://database/Assets/Images/Icons/video.png?fileID=2800000&guid=c2286ba4b82029c469b4b5de77a2fff1&type=3#video");
     -unity-background-image-tint-color: rgb(255, 167, 0);
     background-color: rgba(255, 255, 255, 0);
 }
 
 .flag-marker-clear {
-    background-image: url('project://database/Assets/Images/Icons/check-circle.png?fileID=2800000&guid=dd15b2476d7880a4daf4681a1b209783&type=3#check-circle');
+    background-image: url("project://database/Assets/Images/Icons/check-circle.png?fileID=2800000&guid=dd15b2476d7880a4daf4681a1b209783&type=3#check-circle");
     -unity-background-image-tint-color: rgb(76, 255, 0);
     background-color: rgba(255, 255, 255, 0);
 }
 
 .flag-marker-lock {
-    background-image: url('project://database/Assets/Images/Icons/lock.png?fileID=2800000&guid=7ac7b28f6f2f1c648ad9253e6056dfea&type=3#lock');
+    background-image: url("project://database/Assets/Images/Icons/lock.png?fileID=2800000&guid=7ac7b28f6f2f1c648ad9253e6056dfea&type=3#lock");
     -unity-background-image-tint-color: rgb(128, 128, 128);
     background-color: rgba(255, 255, 255, 0);
 }
@@ -94,7 +94,7 @@ Button:active {
     width: 100px;
     height: 100px;
     margin-right: 50px;
-    background-image: url('project://database/Assets/Images/Icons/paint.png?fileID=2800000&guid=7253c77fe5137024ea2147174a67e869&type=3#paint');
+    background-image: url("project://database/Assets/Images/Icons/paint.png?fileID=2800000&guid=7253c77fe5137024ea2147174a67e869&type=3#paint");
     border-top-width: 0;
     border-right-width: 0;
     border-bottom-width: 0;
@@ -184,7 +184,7 @@ Button:active {
 .setting-item-icon {
     width: 60%;
     height: 60%;
-    background-image: url('project://database/Assets/Images/Icons/volume.png?fileID=2800000&guid=1e9195e6c1782e94387d8b3d26a5859d&type=3#volume');
+    background-image: url("project://database/Assets/Images/Icons/volume.png?fileID=2800000&guid=1e9195e6c1782e94387d8b3d26a5859d&type=3#volume");
 }
 
 .consent-agree-btn {
@@ -267,4 +267,20 @@ Button:active {
 }
 
 .screen {
+}
+
+#StageClear {
+    opacity: 1;
+    transition-property: opacity;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
+    transition-delay: 0.8s;
+}
+
+#StageClear.hidden {
+    transition-property: opacity;
+    transition-duration: 0s;
+    transition-timing-function: ease-in;
+    opacity: 0;
+    display: none;
 }
