@@ -83,4 +83,20 @@ public static class Helper
             }, TrickleDown.TrickleDown);
         }
     }
+    public static string ReplaceCharAt(string str, string replaceChar, int index)
+    {
+        string res = "";
+        for (int i = 0; i < str.Length; i++)
+        {
+            if (i == index)
+            {
+                res += replaceChar;
+            }
+            else
+            {
+                res += str[i];
+            }
+        }
+        return res;
+    }
 }

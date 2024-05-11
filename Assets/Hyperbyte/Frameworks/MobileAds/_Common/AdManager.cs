@@ -45,7 +45,7 @@ namespace Hyperbyte.Ads
         public static event Action<string> OnRewardedLoadFailedEvent;
         public static event Action OnRewardedShownEvent;
         public static event Action OnRewardedClosedEvent;
-        public static event Action<string> OnRewardedAdRewardedEvent;
+        public static event Action OnRewardedAdRewardedEvent;
 
         [System.NonSerialized] public AdSettings adSettings;
 
@@ -219,9 +219,8 @@ namespace Hyperbyte.Ads
         /// <summary>
         /// Show rewarded ad if available. tag is to identify from which location rewarded ad is called.
         /// </summary>
-        public void ShowRewardedWithTag(string _rewardedVideoTag)
+        public void ShowRewardedVideo()
         {
-            rewardedVideoTag = _rewardedVideoTag;
             if (adSettings.adsEnabled && adSettings.rewardedAdsEnabled)
             {
 #if UNITY_EDITOR
@@ -248,7 +247,7 @@ namespace Hyperbyte.Ads
         public void OnRewardedLoadFailed(string reason) { { if (OnRewardedLoadFailedEvent != null) { OnRewardedLoadFailedEvent.Invoke(reason); } } }
         public void OnRewardedShown() { if (OnRewardedShownEvent != null) { OnRewardedShownEvent.Invoke(); } }
         public void OnRewardedClosed() { if (OnRewardedClosedEvent != null) { OnRewardedClosedEvent.Invoke(); } }
-        public void OnRewardedAdRewarded() { if (OnRewardedAdRewardedEvent != null) { OnRewardedAdRewardedEvent.Invoke(rewardedVideoTag); } }
+        public void OnRewardedAdRewarded() { if (OnRewardedAdRewardedEvent != null) { OnRewardedAdRewardedEvent.Invoke(); } }
         #endregion
 
         public static event Action<bool, bool> OnConsentVerifiedEvent;

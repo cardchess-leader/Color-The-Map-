@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Hyperbyte;
+using Hyperbyte.Ads;
 
 public class UITKController : Singleton<UITKController>
 {
@@ -18,6 +19,10 @@ public class UITKController : Singleton<UITKController>
     VisualElement statsScreen;
     VisualElement statsCountryScreen;
     VisualElement stageClearScreen;
+    VisualElement adPopupScreen;
+    VisualElement iapPopupScreen;
+    VisualElement purchaseSuccessScreen;
+    VisualElement purchaseFailureScreen;
     bool isOverlayScreenTransitioning = false;
     void OnEnable()
     {
@@ -41,12 +46,19 @@ public class UITKController : Singleton<UITKController>
         statsScreen = root.Q("StatsScreen");
         statsCountryScreen = root.Q("StatsCountryScreen");
         stageClearScreen = root.Q("StageClear");
+        adPopupScreen = root.Q("WatchAdsPopup");
+        iapPopupScreen = root.Q("IAPPopup");
+        purchaseSuccessScreen = root.Q("PurchaseSuccess");
+        purchaseFailureScreen = root.Q("PurchaseFailure");
 
         // Close Button Click Listeners
         flagListScreen.Q<Button>("CloseBtn").clicked += () => flagListScreen.AddToClassList("translate-down");
         themeScreen.Q<Button>("CloseBtn").clicked += () => themeScreen.AddToClassList("translate-down");
         settingsScreen.Q<Button>("CloseBtn").clicked += () => settingsScreen.AddToClassList("translate-down");
         statsCountryScreen.Q<Button>("CloseBtn").clicked += () => statsCountryScreen.AddToClassList("scale-to-zero");
+        adPopupScreen.Q<Button>("CloseBtn").clicked += () => adPopupScreen.AddToClassList("scale-to-zero");
+        purchaseSuccessScreen.Q<Button>("ContinueBtn").clicked += () => purchaseSuccessScreen.AddToClassList("scale-to-zero");
+        purchaseFailureScreen.Q<Button>("ContinueBtn").clicked += () => purchaseFailureScreen.AddToClassList("scale-to-zero");
 
         // Back Button Click Listeners
         dataSettingsScreen.Q<Button>("BackBtn").clicked += () => dataSettingsScreen.AddToClassList("translate-right");
@@ -70,6 +82,27 @@ public class UITKController : Singleton<UITKController>
         settingsScreen.Q<Button>("About").clicked += () => aboutScreen.RemoveFromClassList("translate-right");
         settingsScreen.Q<Button>("DataSettings").clicked += () => dataSettingsScreen.RemoveFromClassList("translate-right");
         settingsScreen.Q<Button>("Stats").clicked += () => statsScreen.RemoveFromClassList("translate-right");
+
+        // Buttons inside Popup Listeners
+        adPopupScreen.Q<Button>("YESBtn").clicked += () =>
+        {
+            adPopupScreen.AddToClassList("scale-to-zero");
+            AdManager.Instance.ShowRewardedVideo();
+        };
+        adPopupScreen.Q<Button>("NOBtn").clicked += () =>
+        {
+            adPopupScreen.AddToClassList("scale-to-zero");
+            iapPopupScreen.RemoveFromClassList("scale-to-zero");
+        };
+        iapPopupScreen.Q<Button>("YESBtn").clicked += () =>
+        {
+            ProductInfo removeAds = IAPManager.Instance.GetProductInfoById(0);
+            IAPManager.Instance.PurchaseProduct(removeAds);
+        };
+        iapPopupScreen.Q<Button>("NOBtn").clicked += () =>
+        {
+            iapPopupScreen.AddToClassList("scale-to-zero");
+        };
     }
     void OnChooseTheme(ClickEvent evt)
     {
@@ -88,13 +121,14 @@ public class UITKController : Singleton<UITKController>
     {
         if (evt.target is VisualElement element && element.userData is string ctryName)
         {
-            mainScreen.Q<Label>("Title").text = ctryName;
-            Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
-            mainScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
-            GameManager.Instance.SetCountryMap(ctryName);
-            root.Q("FlagListScreen").AddToClassList("translate-down");
-            StartCoroutine(OverlayScreenTransitionCoroutine());
+            GameManager.Instance.OnChooseCtry(ctryName);
         }
+    }
+    public void SetCtryUI(CountrySO countrySO)
+    {
+        mainScreen.Q<Label>("Title").text = countrySO.ctryName;
+        Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{countrySO.ctryName}");
+        mainScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
     }
     IEnumerator OverlayScreenTransitionCoroutine()
     {
@@ -147,10 +181,11 @@ public class UITKController : Singleton<UITKController>
             isOdd = !isOdd;
         }
     }
-    IEnumerator InitializeCountryList()
+    public IEnumerator InitializeCountryList()
     {
         yield return null;
         ScrollView scrollview = root.Q("FlagListScreen").Q<ScrollView>();
+        scrollview.Clear();
         foreach (CountrySO.Continent continent in Enum.GetValues(typeof(CountrySO.Continent)))
         {
             // Adding the delimiter //
@@ -172,11 +207,15 @@ public class UITKController : Singleton<UITKController>
                         Texture2D image = Resources.Load<Texture2D>($"Images/Flags/{countrySO.ctryName}");
                         flagcell.Q<Button>().style.backgroundImage = new StyleBackground(image);
                         VisualElement marker = flagcell.Q("Marker");
-                        if (countrySO.terms == CountrySO.Terms.WatchAds)
+                        if (GameManager.Instance.IsMapCleared(countrySO))
+                        {
+                            marker.AddToClassList("flag-marker-clear");
+                        }
+                        else if (!ProfileManager.Instance.IsAppAdFree() && countrySO.terms == CountrySO.Terms.WatchAds)
                         {
                             marker.AddToClassList("flag-marker-camera");
                         }
-                        else if (countrySO.terms == CountrySO.Terms.Locked)
+                        else if (!ProfileManager.Instance.IsAppAdFree() && countrySO.terms == CountrySO.Terms.Locked)
                         {
                             marker.AddToClassList("flag-marker-lock");
                         }
@@ -235,6 +274,25 @@ public class UITKController : Singleton<UITKController>
                 break;
             case "select-map":
                 flagListScreen.RemoveFromClassList("translate-down");
+                break;
+            case "ad-popup":
+                adPopupScreen.RemoveFromClassList("scale-to-zero");
+                break;
+            case "iap-popup":
+                iapPopupScreen.RemoveFromClassList("scale-to-zero");
+                break;
+        }
+    }
+    public void HideUISegment(string segmentName)
+    {
+        switch (segmentName)
+        {
+            case "flag-list":
+                flagListScreen.AddToClassList("translate-down");
+                StartCoroutine(OverlayScreenTransitionCoroutine());
+                break;
+            case "ad-popup":
+                StartCoroutine(OverlayScreenTransitionCoroutine());
                 break;
         }
     }

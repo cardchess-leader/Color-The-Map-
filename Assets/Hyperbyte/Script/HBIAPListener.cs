@@ -56,10 +56,9 @@ namespace Hyperbyte
             {
                 case RewardType.REMOVE_ADS:
                     ProfileManager.Instance.SetAppAsAdFree();
+                    Debug.Log("Purchase Successful!");
                     // GameManager.instance.SwitchPage("Main");
                     // UIController.Instance.ShowMessage("Purchase Successful", "Enjoy game with ad-free and all 150 questions!");
-                    break;
-                case RewardType.OTHER:
                     break;
             }
 
@@ -77,6 +76,7 @@ namespace Hyperbyte
             // {
             //     UIController.Instance.commonMessageScreen.Deactivate();
             // }).Show();
+            Debug.Log("reason is: " + reason);
         }
 
         void OnRestoreCompleted(bool result)

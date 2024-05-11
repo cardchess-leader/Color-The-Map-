@@ -30,4 +30,5 @@ public class CountrySO : ScriptableObject
     public float area;
     [TextArea(1, 8)]
     public string funFact;
+
 }

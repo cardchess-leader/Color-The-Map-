@@ -143,6 +143,7 @@ public class Tutorial : Singleton<Tutorial>
                 if (inputSource == "MapTouch")
                 {
                     // Logic To End Tutorial //
+                    this.enabled = false;
                     gameObject.SetActive(false);
                     tutorialCanvas.SetActive(false);
                     GameManager.Instance.EndTutorial();

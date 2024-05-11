@@ -246,8 +246,6 @@ namespace Hyperbyte
 				else { storeController.InitiatePurchase(product); }
 			}
 #else
-			//GameObject sandboxPuchaseScreen = (GameObject) Instantiate (Resources.Load("SandboxPurchaseScreen")) as GameObject;
-			//sandboxPuchaseScreen.GetComponent<SandboxPurchaseScreen>().InitialiseSandboxPurchase(productInfo);
 			IAPManager.Instance.OnSandboxPurchaseSuccess(productInfo);
 #endif
 		}

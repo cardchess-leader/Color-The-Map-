@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Hyperbyte;
+using Hyperbyte.Ads;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -27,10 +28,12 @@ public class GameManager : Singleton<GameManager>
     Camera mainCamera;
     Color[] regionsColor; // Subject Map's colors for each region
     bool stageCleared = false;
+    CountrySO rewardCountrySO;
     void OnEnable()
     {
         InitializePlayerPref();
         Initialize();
+        AdManager.OnRewardedAdRewardedEvent += OnRewardedAdRewarded;
     }
     void Start()
     {
@@ -45,6 +48,7 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
             PlayerPrefs.SetInt("TutorialViewed", 0);
+            PlayerPrefs.SetString("CtryMapProgress", new string('0', countryList.Count));
         }
     }
     void Initialize()
@@ -56,6 +60,14 @@ public class GameManager : Singleton<GameManager>
         else
         {
             InitializeGame();
+        }
+    }
+    void OnRewardedAdRewarded()
+    {
+        if (rewardCountrySO != null)
+        {
+            SetupCountry(rewardCountrySO);
+            UITKController.Instance.HideUISegment("flag-list");
         }
     }
     public void InitializeGame(bool tutorialEnd = false)
@@ -113,6 +125,9 @@ public class GameManager : Singleton<GameManager>
                 return;
             }
 
+            Debug.Log($"[Log] adjMatrix length is: {countrySO.mapSO.adjMatrix.Count}");
+            Debug.Log($"[Log] target index is: {targetIndex}");
+
             var indices = countrySO.mapSO.adjMatrix[targetIndex].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(index => int.TryParse(index.Trim(), out int parsedIndex) ? parsedIndex : -1)
                                 .Where(index => index != -1).ToList();
@@ -135,30 +150,78 @@ public class GameManager : Singleton<GameManager>
     }
     void CheckForColoringComplete()
     {
-        bool complete = true;
-        for (int i = 1; i < regionsColor.Length; i++)
+        try
         {
-            if (regionsColor[i] == new Color())
+            bool complete = true;
+            for (int i = 1; i < regionsColor.Length; i++)
             {
-                complete = false;
-                break;
+                if (regionsColor[i] == new Color())
+                {
+                    complete = false;
+                    break;
+                }
+            }
+            if (complete && !stageCleared)
+            {
+                stageCleared = true;
+                UITKController.Instance.HandleStageClear(countrySO);
+                GameObject.Find("Confetti").GetComponent<ParticleSystem>().Play();
+                int clearIndex = countryList.IndexOf(countrySO);
+                if (clearIndex != -1)
+                {
+                    PlayerPrefs.SetString("CtryMapProgress", Helper.ReplaceCharAt(PlayerPrefs.GetString("CtryMapProgress"), "1", clearIndex));
+                    Debug.Log(PlayerPrefs.GetString("CtryMapProgress"));
+                }
+                StartCoroutine(UITKController.Instance.InitializeCountryList());
             }
         }
-        if (complete && !stageCleared)
+        catch (Exception e)
         {
-            stageCleared = true;
-            UITKController.Instance.HandleStageClear(countrySO);
-            GameObject.Find("Confetti").GetComponent<ParticleSystem>().Play();
+            Debug.Log(e);
         }
     }
-    public void SetCountryMap(string ctryName)
+    void SetupCountry(CountrySO countrySO)
     {
-        // validation // 
-        countrySO = GetCountrySO(ctryName);
+        SetCountryMap(countrySO);
+        UITKController.Instance.HideUISegment("flag-list");
+        UITKController.Instance.SetCtryUI(countrySO);
+    }
+    public void OnChooseCtry(string ctryName)
+    {
+        CountrySO countrySO = GetCountrySO(ctryName);
         if (countrySO == null)
         {
             return;
         }
+        if (ProfileManager.Instance.IsAppAdFree())
+        {
+            SetupCountry(countrySO);
+        }
+        else
+        {
+            switch (countrySO.terms)
+            {
+                case CountrySO.Terms.Free:
+                    SetupCountry(countrySO);
+                    break;
+                case CountrySO.Terms.WatchAds:
+                    rewardCountrySO = countrySO;
+                    UITKController.Instance.ShowUISegment("ad-popup");
+                    break;
+                case CountrySO.Terms.Locked:
+                    UITKController.Instance.ShowUISegment("iap-popup");
+                    break;
+            }
+        }
+    }
+    public void SetCountryMap(CountrySO countrySO)
+    {
+        // validation // 
+        if (countrySO == null)
+        {
+            return;
+        }
+        this.countrySO = countrySO;
         if (mapContainer.transform.childCount > 0)
         {
             Destroy(mapContainer.transform.GetChild(0).gameObject);
@@ -261,5 +324,18 @@ public class GameManager : Singleton<GameManager>
         {
             mode = ParticleSystemGradientMode.RandomColor
         };
+    }
+    public bool IsMapCleared(CountrySO countrySO)
+    {
+        try
+        {
+            int countryIndex = countryList.IndexOf(countrySO);
+            return PlayerPrefs.GetString("CtryMapProgress")[countryIndex] == '1';
+        }
+        catch (Exception e)
+        {
+            Debug.Log("exception is: " + e);
+            return false;
+        }
     }
 }
