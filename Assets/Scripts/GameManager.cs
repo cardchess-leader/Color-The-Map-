@@ -23,6 +23,7 @@ public class GameManager : Singleton<GameManager>
     public RenderTexture renderTexture;
     public float initialOrthographicSize;
     public AudioClip uiBtnClickSound;
+    public List<AudioClip> sfxClipList = new List<AudioClip>();
     [System.NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
     [System.NonSerialized] public CountrySO countrySO;
     Camera mainCamera;
@@ -84,9 +85,9 @@ public class GameManager : Singleton<GameManager>
     {
         PlayerPrefs.SetInt("TutorialViewed", 1);
     }
-    public void SetTheme(int themeIndex = 0, bool update = false) // -1 means just use playerpref value, no update //
+    public void SetTheme(int themeIndex = 0, bool initialize = false) // -1 means just use playerpref value, no update //
     {
-        if (!update)
+        if (!initialize)
         {
             if (themeIndex == PlayerPrefs.GetInt("ThemeIndex"))
             {
@@ -95,6 +96,15 @@ public class GameManager : Singleton<GameManager>
             else
             {
                 PlayerPrefs.SetInt("ThemeIndex", themeIndex);
+                if (mapContainer.transform.childCount > 0)
+                {
+                    // Reset the map with default colors (grey)
+                    foreach (Transform child in mapContainer.transform.GetChild(0))
+                    {
+                        child.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                    }
+                    regionsColor = new Color[regionsColor.Length];
+                }
             }
         }
         ThemeSO themeSO = themeList[PlayerPrefs.GetInt("ThemeIndex")];
@@ -112,6 +122,8 @@ public class GameManager : Singleton<GameManager>
             brush.transform.GetChild(0).GetComponent<Image>().enabled = false;
         }
         paintBrushSet[index].transform.GetChild(0).GetComponent<Image>().enabled = true;
+        AudioController.Instance.PlayClip(sfxClipList[0]);
+        UIFeedback.Instance.PlayHapticLight();
     }
     public void HandleMapTouch(float coordX, float coordY)
     {
@@ -134,6 +146,7 @@ public class GameManager : Singleton<GameManager>
 
             if (indices.Any(adjIndex => adjIndex >= regionsColor.Length || regionsColor[adjIndex] == selectedColor.Value))
             {
+                AudioController.Instance.PlayClip(sfxClipList[2]); // Error sound for trying to use same color with adjacent region!
                 return;
             }
 
@@ -145,6 +158,8 @@ public class GameManager : Singleton<GameManager>
 
             renderer.color = selectedColor.Value;
             regionsColor[targetIndex] = selectedColor.Value;
+            AudioController.Instance.PlayClip(sfxClipList[1]);
+            UIFeedback.Instance.PlayHapticLight();
             CheckForColoringComplete();
         }
     }
@@ -294,7 +309,6 @@ public class GameManager : Singleton<GameManager>
             cameraToCapture.enabled = false;
         }
     }
-
     void SetParticleSystemGradient(ThemeSO themeSO)
     {
         var mainModule = GameObject.Find("Confetti").GetComponent<ParticleSystem>().main;

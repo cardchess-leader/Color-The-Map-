@@ -96,6 +96,7 @@ public class UITKController : Singleton<UITKController>
         };
         iapPopupScreen.Q<Button>("YESBtn").clicked += () =>
         {
+            iapPopupScreen.AddToClassList("scale-to-zero");
             ProductInfo removeAds = IAPManager.Instance.GetProductInfoById(0);
             IAPManager.Instance.PurchaseProduct(removeAds);
         };
@@ -280,6 +281,12 @@ public class UITKController : Singleton<UITKController>
                 break;
             case "iap-popup":
                 iapPopupScreen.RemoveFromClassList("scale-to-zero");
+                break;
+            case "iap-success-popup":
+                purchaseSuccessScreen.RemoveFromClassList("scale-to-zero");
+                break;
+            case "iap-fail-popup":
+                purchaseFailureScreen.RemoveFromClassList("scale-to-zero");
                 break;
         }
     }

@@ -67,7 +67,7 @@ public class GestureController : MonoBehaviour
 
     private void PanGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
-        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay())
+        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay() || Tutorial.Instance != null && Tutorial.Instance.enabled)
         {
             return;
         }
@@ -107,7 +107,7 @@ public class GestureController : MonoBehaviour
 
     private void ScaleGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
-        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay())
+        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay() || Tutorial.Instance != null && Tutorial.Instance.enabled)
         {
             return;
         }
@@ -151,7 +151,7 @@ public class GestureController : MonoBehaviour
 
     private void RotateGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
-        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay())
+        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay() || Tutorial.Instance != null && Tutorial.Instance.enabled)
         {
             return;
         }
