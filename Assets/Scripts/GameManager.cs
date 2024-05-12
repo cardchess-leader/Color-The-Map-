@@ -13,12 +13,10 @@ public class GameManager : Singleton<GameManager>
 {
     public List<CountrySO> countryList = new List<CountrySO>();
     public List<ThemeSO> themeList = new List<ThemeSO>();
-    public GameObject canvas;
     public GestureController gestureController;
     public GameObject mapContainer;
     public GameObject[] paintBrushSet = new GameObject[4];
     public Color? selectedColor;
-    public GameObject tutorial;
     public Camera cameraToCapture;
     public RenderTexture renderTexture;
     public float initialOrthographicSize;
@@ -48,20 +46,12 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefs.SetInt("ThemeIndex", 0);
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
-            PlayerPrefs.SetInt("TutorialViewed", 0);
             PlayerPrefs.SetString("CtryMapProgress", new string('0', countryList.Count));
         }
     }
     void Initialize()
     {
-        if (PlayerPrefs.GetInt("TutorialViewed", 0) == 0)
-        {
-            tutorial.SetActive(true);
-        }
-        else
-        {
-            InitializeGame();
-        }
+        InitializeGame();
     }
     void OnRewardedAdRewarded()
     {
@@ -71,19 +61,10 @@ public class GameManager : Singleton<GameManager>
             UITKController.Instance.HideUISegment("flag-list");
         }
     }
-    public void InitializeGame(bool tutorialEnd = false)
+    public void InitializeGame()
     {
-        canvas.SetActive(true);
         SetTheme(0, true);
-        UITKController.Instance.ShowUISegment("footer");
-        if (tutorialEnd)
-        {
-            UITKController.Instance.ShowUISegment("select-map");
-        }
-    }
-    public void EndTutorial()
-    {
-        PlayerPrefs.SetInt("TutorialViewed", 1);
+        UITKController.Instance.ShowUISegment("select-map");
     }
     public void SetTheme(int themeIndex = 0, bool initialize = false) // -1 means just use playerpref value, no update //
     {
@@ -188,6 +169,7 @@ public class GameManager : Singleton<GameManager>
                     Debug.Log(PlayerPrefs.GetString("CtryMapProgress"));
                 }
                 StartCoroutine(UITKController.Instance.InitializeCountryList());
+                StartCoroutine(UITKController.Instance.InitializeStatsCountryList());
             }
         }
         catch (Exception e)
@@ -296,7 +278,7 @@ public class GameManager : Singleton<GameManager>
             Destroy(texture);
             Destroy(rt);
             // Show message prompt (store successful) //
-            canvas.transform.Find("Camera Save Message").GetComponent<Animator>().Play("Text Fade", 0, 0);
+            GameObject.Find("Camera Save Message").GetComponent<Animator>().Play("Text Fade", 0, 0);
         }
         catch (Exception ex)
         {
@@ -350,6 +332,27 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log("exception is: " + e);
             return false;
+        }
+    }
+    public List<CountrySO> ClearedCtryList()
+    {
+        try
+        {
+            List<CountrySO> clearedList = new List<CountrySO>();
+            string progress = PlayerPrefs.GetString("CtryMapProgress");
+            for (int i = 0; i < countryList.Count; i++)
+            {
+                if (progress[i] == '1')
+                {
+                    clearedList.Add(countryList[i]);
+                }
+            }
+            return clearedList;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            return new List<CountrySO>();
         }
     }
 }

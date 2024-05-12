@@ -221,6 +221,7 @@ public class UITKController : Singleton<UITKController>
                             marker.AddToClassList("flag-marker-lock");
                         }
                         flagcell.Q<Button>().userData = countrySO.ctryName;
+                        flagcell.Q<Button>().AddToClassList("ui-btn");
                     }
                     else // Insert empty flag items as placeholder //
                     {
@@ -233,37 +234,37 @@ public class UITKController : Singleton<UITKController>
             }
         }
     }
-    IEnumerator InitializeStatsCountryList()
+    public IEnumerator InitializeStatsCountryList() // also update how many countries have been cleared!
     {
         yield return null;
         ScrollView scrollview = root.Q("StatsScreen").Q<ScrollView>();
-        foreach (CountrySO.Continent continent in Enum.GetValues(typeof(CountrySO.Continent)))
+        scrollview.Clear();
+        List<CountrySO> countryList = GameManager.Instance.ClearedCtryList();
+        statsScreen.Q<Label>("Label2").text = $"You have colored {countryList.Count} country maps!";
+        for (int i = 0; i < Mathf.Ceil(countryList.Count / 5f); i++)
         {
-            List<CountrySO> countryList = GameManager.Instance.countryList.Where(countrySO => countrySO.continent == continent).ToList();
-            for (int i = 0; i < Mathf.Ceil(countryList.Count / 5f); i++)
+            VisualElement row = new VisualElement();
+            row.AddToClassList("flag-row");
+            for (int j = 0; j < 5; j++)
             {
-                VisualElement row = new VisualElement();
-                row.AddToClassList("flag-row");
-                for (int j = 0; j < 5; j++)
+                int index = 5 * i + j;
+                VisualElement flagcell = Resources.Load<VisualTreeAsset>($"UXML/FlagCell").CloneTree();
+                if (index < countryList.Count)
                 {
-                    int index = 5 * i + j;
-                    VisualElement flagcell = Resources.Load<VisualTreeAsset>($"UXML/FlagCell").CloneTree();
-                    if (index < countryList.Count)
-                    {
-                        CountrySO countrySO = countryList[index];
-                        Texture2D image = Resources.Load<Texture2D>($"Images/Flags/{countrySO.ctryName}");
-                        flagcell.Q<Button>().style.backgroundImage = new StyleBackground(image);
-                        flagcell.Q<Button>().userData = countrySO.ctryName;
-                    }
-                    else // Insert empty flag items as placeholder //
-                    {
-                        flagcell.style.visibility = Visibility.Hidden;
-                        flagcell.Q<Button>().pickingMode = PickingMode.Ignore;
-                    }
-                    row.Add(flagcell);
+                    CountrySO countrySO = countryList[index];
+                    Texture2D image = Resources.Load<Texture2D>($"Images/Flags/{countrySO.ctryName}");
+                    flagcell.Q<Button>().style.backgroundImage = new StyleBackground(image);
+                    flagcell.Q<Button>().userData = countrySO.ctryName;
+                    flagcell.Q<Button>().AddToClassList("ui-btn");
                 }
-                scrollview.Add(row);
+                else // Insert empty flag items as placeholder //
+                {
+                    flagcell.style.visibility = Visibility.Hidden;
+                    flagcell.Q<Button>().pickingMode = PickingMode.Ignore;
+                }
+                row.Add(flagcell);
             }
+            scrollview.Add(row);
         }
     }
     public void ShowUISegment(string segmentName)

@@ -46,14 +46,7 @@ public class GestureController : MonoBehaviour
         }
         if (gesture.State == GestureRecognizerState.Ended)
         {
-            if (Tutorial.Instance != null && Tutorial.Instance.enabled)
-            {
-                Tutorial.Instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
-            }
-            else
-            {
-                GameManager.Instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
-            }
+            GameManager.Instance.HandleMapTouch(gesture.FocusX, gesture.FocusY);
         }
     }
 
@@ -67,7 +60,7 @@ public class GestureController : MonoBehaviour
 
     private void PanGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
-        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay() || Tutorial.Instance != null && Tutorial.Instance.enabled)
+        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay())
         {
             return;
         }
@@ -107,7 +100,7 @@ public class GestureController : MonoBehaviour
 
     private void ScaleGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
-        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay() || Tutorial.Instance != null && Tutorial.Instance.enabled)
+        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay())
         {
             return;
         }
@@ -151,7 +144,7 @@ public class GestureController : MonoBehaviour
 
     private void RotateGestureCallback(DigitalRubyShared.GestureRecognizer gesture)
     {
-        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay() || Tutorial.Instance != null && Tutorial.Instance.enabled)
+        if (UITKController.Instance != null && UITKController.Instance.IsScreenOverlay())
         {
             return;
         }
