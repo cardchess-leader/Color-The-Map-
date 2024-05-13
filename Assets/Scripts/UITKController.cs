@@ -17,105 +17,214 @@ public class UITKController : Singleton<UITKController>
     VisualElement aboutScreen;
     VisualElement dataSettingsScreen;
     VisualElement statsScreen;
-    VisualElement statsCountryScreen;
-    VisualElement stageClearScreen;
-    VisualElement adPopupScreen;
-    VisualElement iapPopupScreen;
-    VisualElement purchaseSuccessScreen;
-    VisualElement purchaseFailureScreen;
+    VisualElement statsCountryPopup;
+    VisualElement stageClearOverlay;
+    VisualElement adPopup;
+    VisualElement iapPopup;
+    VisualElement purchaseSuccessPopup;
+    VisualElement purchaseFailurePopup;
+    VisualElement howToScreen;
     bool isOverlayScreenTransitioning = false;
     void OnEnable()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
+        SetScreensReference();
         InitializeHandler();
         InitializeThemeList();
+        StartCoroutine(InitAfterFirstFrame());
         StartCoroutine(InitializeCountryList());
         StartCoroutine(InitializeThemeList());
         StartCoroutine(InitializeStatsCountryList());
         Helper.SetHapticToBtn(root, "ui-btn", false, GameManager.Instance.uiBtnClickSound);
     }
-    void InitializeHandler()
+    void SetScreensReference()
     {
         // Cache references to frequently used elements
         mainScreen = root.Q("MainScreen");
         themeScreen = root.Q("ThemeScreen");
         flagListScreen = root.Q("FlagListScreen");
+        howToScreen = root.Q("HowToScreen");
         settingsScreen = root.Q("SettingsScreen");
-        aboutScreen = root.Q("AboutScreen");
         dataSettingsScreen = root.Q("DataSettingsScreen");
+        aboutScreen = root.Q("AboutScreen");
         statsScreen = root.Q("StatsScreen");
-        statsCountryScreen = root.Q("StatsCountryScreen");
-        stageClearScreen = root.Q("StageClear");
-        adPopupScreen = root.Q("WatchAdsPopup");
-        iapPopupScreen = root.Q("IAPPopup");
-        purchaseSuccessScreen = root.Q("PurchaseSuccess");
-        purchaseFailureScreen = root.Q("PurchaseFailure");
-
-        // Close Button Click Listeners
+        stageClearOverlay = root.Q("StageClearOverlay");
+        statsCountryPopup = root.Q("StatsCountryPopup");
+        adPopup = root.Q("WatchAdsPopup");
+        iapPopup = root.Q("IAPPopup");
+        purchaseSuccessPopup = root.Q("PurchaseSuccessPopup");
+        purchaseFailurePopup = root.Q("PurchaseFailurePopup");
+    }
+    void InitializeMainPageHandler()
+    {
+        // Open Subpage through Footer
+        mainScreen.Q<Button>("WorldMap").clicked += () => flagListScreen.RemoveFromClassList("translate-down");
+        mainScreen.Q<Button>("Palette").clicked += () => themeScreen.RemoveFromClassList("translate-down");
+        mainScreen.Q<Button>("Help").clicked += () => howToScreen.RemoveFromClassList("translate-down");
+        mainScreen.Q<Button>("Settings").clicked += () => settingsScreen.RemoveFromClassList("translate-down");
+        mainScreen.Q<Button>("IAP").clicked += () => iapPopup.RemoveFromClassList("scale-to-zero");
+        // Close Subpage
         flagListScreen.Q<Button>("CloseBtn").clicked += () => flagListScreen.AddToClassList("translate-down");
         themeScreen.Q<Button>("CloseBtn").clicked += () => themeScreen.AddToClassList("translate-down");
-        settingsScreen.Q<Button>("CloseBtn").clicked += () => settingsScreen.AddToClassList("translate-down");
-        statsCountryScreen.Q<Button>("CloseBtn").clicked += () => statsCountryScreen.AddToClassList("scale-to-zero");
-        adPopupScreen.Q<Button>("CloseBtn").clicked += () => adPopupScreen.AddToClassList("scale-to-zero");
-        purchaseSuccessScreen.Q<Button>("ContinueBtn").clicked += () => purchaseSuccessScreen.AddToClassList("scale-to-zero");
-        purchaseFailureScreen.Q<Button>("ContinueBtn").clicked += () => purchaseFailureScreen.AddToClassList("scale-to-zero");
-
-        // Back Button Click Listeners
-        dataSettingsScreen.Q<Button>("BackBtn").clicked += () => dataSettingsScreen.AddToClassList("translate-right");
-        aboutScreen.Q<Button>("BackBtn").clicked += () => aboutScreen.AddToClassList("translate-right");
-        statsScreen.Q<Button>("BackBtn").clicked += () => statsScreen.AddToClassList("translate-right");
-
-        // Continue Button Click Listener
-        stageClearScreen.Q<Button>("ContinueBtn").clicked += () => stageClearScreen.AddToClassList("hidden");
-
+        howToScreen.Q<Button>("ContinueBtn").clicked += () => howToScreen.AddToClassList("translate-down");
+        stageClearOverlay.Q<Button>("ContinueBtn").clicked += () => stageClearOverlay.AddToClassList("hidden");
         // Register callback for click event on ScrollContainer
         flagListScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseCtry);
         themeScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseTheme);
-        statsScreen.Q<ScrollView>().RegisterCallback<ClickEvent>(OnChooseStatsCtry);
-
-        // Footer Buttons Click Listeners
-        mainScreen.Q<Button>("WorldMap").clicked += () => flagListScreen.RemoveFromClassList("translate-down");
-        mainScreen.Q<Button>("Palette").clicked += () => themeScreen.RemoveFromClassList("translate-down");
-        mainScreen.Q<Button>("Settings").clicked += () => settingsScreen.RemoveFromClassList("translate-down");
-
-        // Settings Item Click Listeners
-        settingsScreen.Q<Button>("About").clicked += () => aboutScreen.RemoveFromClassList("translate-right");
-        settingsScreen.Q<Button>("DataSettings").clicked += () => dataSettingsScreen.RemoveFromClassList("translate-right");
-        settingsScreen.Q<Button>("Stats").clicked += () => statsScreen.RemoveFromClassList("translate-right");
-
-        // Buttons inside Popup Listeners
-        adPopupScreen.Q<Button>("YESBtn").clicked += () =>
+    }
+    void InitializeAdIapPageHandler()
+    {
+        // Yes/No Btn Handler
+        adPopup.Q<Button>("YESBtn").clicked += () =>
         {
-            adPopupScreen.AddToClassList("scale-to-zero");
+            adPopup.AddToClassList("scale-to-zero");
             AdManager.Instance.ShowRewardedVideo();
         };
-        adPopupScreen.Q<Button>("NOBtn").clicked += () =>
+        adPopup.Q<Button>("NOBtn").clicked += () =>
         {
-            adPopupScreen.AddToClassList("scale-to-zero");
-            iapPopupScreen.RemoveFromClassList("scale-to-zero");
+            adPopup.AddToClassList("scale-to-zero");
+            iapPopup.RemoveFromClassList("scale-to-zero");
         };
-        iapPopupScreen.Q<Button>("YESBtn").clicked += () =>
+        iapPopup.Q<Button>("YESBtn").clicked += () =>
         {
-            iapPopupScreen.AddToClassList("scale-to-zero");
+            iapPopup.AddToClassList("scale-to-zero");
             ProductInfo removeAds = IAPManager.Instance.GetProductInfoById(0);
             IAPManager.Instance.PurchaseProduct(removeAds);
         };
-        iapPopupScreen.Q<Button>("NOBtn").clicked += () =>
+        iapPopup.Q<Button>("NOBtn").clicked += () =>
         {
-            iapPopupScreen.AddToClassList("scale-to-zero");
+            iapPopup.AddToClassList("scale-to-zero");
         };
+        // Close Ad & IAP Pages
+        adPopup.Q<Button>("CloseBtn").clicked += () => adPopup.AddToClassList("scale-to-zero");
+        purchaseSuccessPopup.Q<Button>("ContinueBtn").clicked += () => purchaseSuccessPopup.AddToClassList("scale-to-zero");
+        purchaseFailurePopup.Q<Button>("ContinueBtn").clicked += () => purchaseFailurePopup.AddToClassList("scale-to-zero");
+    }
+    void InitializeSettingsPageHandler()
+    {
+        // Settings Item Click Listeners
+        settingsScreen.Q<Button>("About").clicked += () => aboutScreen.RemoveFromClassList("translate-right");
+        settingsScreen.Q<Button>("Sound").clicked += () =>
+        {
+            ProfileManager.Instance.ToggleSoundStatus();
+            UpdateSoundIcon();
+        };
+        settingsScreen.Q<Button>("Vibration").clicked += () =>
+        {
+            ProfileManager.Instance.ToggleVibrationStatus();
+            UpdateVibrationIcon();
+        };
+        settingsScreen.Q<Button>("Music").clicked += () =>
+        {
+            ProfileManager.Instance.ToggleMusicStatus();
+            UpdateMusicIcon();
+        };
+        settingsScreen.Q<Button>("DataSettings").clicked += () => dataSettingsScreen.RemoveFromClassList("translate-right");
+        settingsScreen.Q<Button>("Stats").clicked += () => statsScreen.RemoveFromClassList("translate-right");
+        // Close Settings & Settings subpages
+        settingsScreen.Q<Button>("CloseBtn").clicked += () => settingsScreen.AddToClassList("translate-down");
+        dataSettingsScreen.Q<Button>("BackBtn").clicked += () => dataSettingsScreen.AddToClassList("translate-right");
+        aboutScreen.Q<Button>("BackBtn").clicked += () => aboutScreen.AddToClassList("translate-right");
+        statsScreen.Q<Button>("BackBtn").clicked += () => statsScreen.AddToClassList("translate-right");
+        statsCountryPopup.Q<Button>("CloseBtn").clicked += () => statsCountryPopup.AddToClassList("scale-to-zero");
+        // Open Stats > Country Info Popup
+        statsScreen.Q<ScrollView>().RegisterCallback<ClickEvent>(OnChooseStatsCtry);
+    }
+    void InitializeHandler()
+    {
+        SetScreensReference();
+        InitializeMainPageHandler();
+        InitializeAdIapPageHandler();
+        InitializeSettingsPageHandler();
+    }
+    IEnumerator InitAfterFirstFrame()
+    {
+        yield return null;
+        UpdateSoundIcon();
+        UpdateVibrationIcon();
+        UpdateMusicIcon();
+        UpdateIAPButton();
+    }
+    void UpdateSoundIcon()
+    {
+        string iconPath = ProfileManager.Instance.IsSoundEnabled ? "Icons/volume" : "Icons/volume-slash";
+        Texture2D soundImage = Resources.Load<Texture2D>(iconPath);
+        if (soundImage == null)
+        {
+            Debug.LogError($"Failed to load texture from path: {iconPath}");
+            return;
+        }
+        settingsScreen.Q<Button>("Sound").Q("Icon").style.backgroundImage = soundImage;
+    }
+    void UpdateVibrationIcon()
+    {
+        string iconPath = ProfileManager.Instance.IsVibrationEnabled ? "Icons/vibration-on" : "Icons/vibration-off";
+        Texture2D vibrationImage = Resources.Load<Texture2D>(iconPath);
+        if (vibrationImage == null)
+        {
+            Debug.LogError($"Failed to load texture from path: {iconPath}");
+            return;
+        }
+        settingsScreen.Q<Button>("Vibration").Q("Icon").style.backgroundImage = vibrationImage;
+    }
+    void UpdateMusicIcon()
+    {
+        string iconPath = ProfileManager.Instance.IsMusicEnabled ? "Icons/music" : "Icons/music-slash";
+        Texture2D musicImage = Resources.Load<Texture2D>(iconPath);
+        if (musicImage == null)
+        {
+            Debug.LogError($"Failed to load texture from path: {iconPath}");
+            return;
+        }
+        settingsScreen.Q<Button>("Music").Q("Icon").style.backgroundImage = musicImage;
+    }
+    public void UpdateIAPButton()
+    {
+        if (ProfileManager.Instance.IsAppAdFree())
+        {
+            // Attempt to find the IAP button
+            VisualElement iapButton = mainScreen.Q<Button>("IAP");
+
+            // Check if the element is correctly cast as a Button
+            if (iapButton is Button button)
+            {
+                button.SetEnabled(false);  // Safely disable the button
+
+                // Find the checkmark element within the button and make it visible
+                var checkMark = iapButton.Q("Check");
+                if (checkMark != null)
+                {
+                    checkMark.style.display = DisplayStyle.Flex;
+                }
+                else
+                {
+                    Debug.LogError("Checkmark element not found within IAP button.");
+                }
+            }
+            else
+            {
+                Debug.LogError("IAP button not found or is not a button.");
+            }
+        }
     }
     void OnChooseTheme(ClickEvent evt)
     {
         if (evt.target is VisualElement element && element.userData is int themeIndex)
         {
-            GameManager.Instance.SetTheme(themeIndex);
-            VisualElement themeContainer = root.Q("ThemeScreen").Q("ScrollContainer").Q("unity-content-container");
-            foreach (VisualElement themeItem in themeContainer.Children())
+            if (themeIndex == 0 || ProfileManager.Instance.IsAppAdFree())
             {
-                themeItem.Q("PaletteItem").RemoveFromClassList("palette-item-select");
+                GameManager.Instance.SetTheme(themeIndex);
+                VisualElement themeContainer = root.Q("ThemeScreen").Q("ScrollContainer").Q("unity-content-container");
+                foreach (VisualElement themeItem in themeContainer.Children())
+                {
+                    themeItem.Q("PaletteItem").RemoveFromClassList("palette-item-select");
+                }
+                themeContainer.Children().ElementAt(themeIndex).Q("PaletteItem").AddToClassList("palette-item-select");
             }
-            themeContainer.Children().ElementAt(themeIndex).Q("PaletteItem").AddToClassList("palette-item-select");
+            else
+            {
+                iapPopup.RemoveFromClassList("scale-to-zero"); // Show IAP Page
+            }
         }
     }
     void OnChooseCtry(ClickEvent evt)
@@ -142,20 +251,20 @@ public class UITKController : Singleton<UITKController>
         if (evt.target is VisualElement element && element.userData is string ctryName)
         {
             SetStatsCtryInfo(ctryName);
-            statsCountryScreen.RemoveFromClassList("scale-to-zero");
+            statsCountryPopup.RemoveFromClassList("scale-to-zero");
         }
     }
     void SetStatsCtryInfo(string ctryName)
     {
         CountrySO countrySO = GameManager.Instance.GetCountrySO(ctryName);
         Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
-        statsCountryScreen.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
-        statsCountryScreen.Q<Label>("Title").text = ctryName;
-        statsCountryScreen.Q<Label>("NumOfRegions").text = $"# of regions: {countrySO.mapSO.numRegions}";
+        statsCountryPopup.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
+        statsCountryPopup.Q<Label>("Title").text = ctryName;
+        statsCountryPopup.Q<Label>("NumOfRegions").text = $"# of regions: {countrySO.mapSO.numRegions}";
         string area = countrySO.area.ToString("N0"), population = countrySO.population.ToString("N0");
-        statsCountryScreen.Q<Label>("Area").text = $"Area: {area} km^2({GameManager.Instance.GetAreaRank(ctryName)}/{GameManager.Instance.countryList.Count})";
-        statsCountryScreen.Q<Label>("Population").text = $"Population: {population}({GameManager.Instance.GetPopulationRank(ctryName)}/{GameManager.Instance.countryList.Count})";
-        statsCountryScreen.Q<Label>("FunFact").text = $"<line-height=150%>{countrySO.funFact}";
+        statsCountryPopup.Q<Label>("Area").text = $"Area: {area} km^2({GameManager.Instance.GetAreaRank(ctryName)}/{GameManager.Instance.countryList.Count})";
+        statsCountryPopup.Q<Label>("Population").text = $"Population: {population}({GameManager.Instance.GetPopulationRank(ctryName)}/{GameManager.Instance.countryList.Count})";
+        statsCountryPopup.Q<Label>("FunFact").text = $"<line-height=150%>{countrySO.funFact}";
     }
     IEnumerator InitializeThemeList()
     {
@@ -278,16 +387,16 @@ public class UITKController : Singleton<UITKController>
                 flagListScreen.RemoveFromClassList("translate-down");
                 break;
             case "ad-popup":
-                adPopupScreen.RemoveFromClassList("scale-to-zero");
+                adPopup.RemoveFromClassList("scale-to-zero");
                 break;
             case "iap-popup":
-                iapPopupScreen.RemoveFromClassList("scale-to-zero");
+                iapPopup.RemoveFromClassList("scale-to-zero");
                 break;
             case "iap-success-popup":
-                purchaseSuccessScreen.RemoveFromClassList("scale-to-zero");
+                purchaseSuccessPopup.RemoveFromClassList("scale-to-zero");
                 break;
             case "iap-fail-popup":
-                purchaseFailureScreen.RemoveFromClassList("scale-to-zero");
+                purchaseFailurePopup.RemoveFromClassList("scale-to-zero");
                 break;
         }
     }
@@ -311,7 +420,7 @@ public class UITKController : Singleton<UITKController>
             return true;
         }
         // Create an array of all screens to check
-        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryScreen };
+        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryPopup };
 
         // Loop through each screen and check the classes
         foreach (VisualElement screen in screens)
@@ -325,10 +434,10 @@ public class UITKController : Singleton<UITKController>
     }
     public void HandleStageClear(CountrySO ctrySO)
     {
-        stageClearScreen.RemoveFromClassList("hidden");
-        stageClearScreen.Q("TitleContainer").Q<Label>("Title").text = $"Congratulations!\nYou just colored all {ctrySO.mapSO.numRegions} regions!";
+        stageClearOverlay.RemoveFromClassList("hidden");
+        stageClearOverlay.Q("TitleContainer").Q<Label>("Title").text = $"Congratulations!\nYou just colored all {ctrySO.mapSO.numRegions} regions!";
         Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctrySO.ctryName}");
-        stageClearScreen.Q("Flag").style.backgroundImage = new StyleBackground(flagImage);
-        stageClearScreen.Q<Label>("FunFact").text = ctrySO.funFact;
+        stageClearOverlay.Q("Flag").style.backgroundImage = new StyleBackground(flagImage);
+        stageClearOverlay.Q<Label>("FunFact").text = ctrySO.funFact;
     }
 }

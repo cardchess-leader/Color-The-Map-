@@ -99,4 +99,13 @@ public static class Helper
         }
         return res;
     }
+
+    public static List<string> ConvertStringToList(string str)
+    {
+        if (str == "")
+        {
+            return new List<string>();
+        }
+        return new List<string>(str.Split(','));
+    }
 }

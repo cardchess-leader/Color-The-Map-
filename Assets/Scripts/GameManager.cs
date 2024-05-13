@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
     public RenderTexture renderTexture;
     public float initialOrthographicSize;
     public AudioClip uiBtnClickSound;
-    public List<AudioClip> sfxClipList = new List<AudioClip>();
+    public List<AudioClip> sfxClipList = new List<AudioClip>(); // 0: select paint, 1: color region, 2: invalid color, 3: clear pop
     [System.NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
     [System.NonSerialized] public CountrySO countrySO;
     Camera mainCamera;
@@ -46,7 +46,7 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefs.SetInt("ThemeIndex", 0);
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
-            PlayerPrefs.SetString("CtryMapProgress", new string('0', countryList.Count));
+            PlayerPrefs.SetString("CtryMapProgress", "");
         }
     }
     void Initialize()
@@ -80,9 +80,12 @@ public class GameManager : Singleton<GameManager>
                 if (mapContainer.transform.childCount > 0)
                 {
                     // Reset the map with default colors (grey)
-                    foreach (Transform child in mapContainer.transform.GetChild(0))
+                    foreach (Transform child in mapContainer.transform.GetChild(0).GetChild(0))
                     {
-                        child.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                        if (child.gameObject.name.StartsWith("Layer"))
+                        {
+                            child.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                        }
                     }
                     regionsColor = new Color[regionsColor.Length];
                 }
@@ -162,12 +165,18 @@ public class GameManager : Singleton<GameManager>
                 stageCleared = true;
                 UITKController.Instance.HandleStageClear(countrySO);
                 GameObject.Find("Confetti").GetComponent<ParticleSystem>().Play();
-                int clearIndex = countryList.IndexOf(countrySO);
+                int clearIndex = countryList.IndexOf(countrySO); // index 0 is the first country
                 if (clearIndex != -1)
                 {
-                    PlayerPrefs.SetString("CtryMapProgress", Helper.ReplaceCharAt(PlayerPrefs.GetString("CtryMapProgress"), "1", clearIndex));
+                    List<string> progressList = Helper.ConvertStringToList(PlayerPrefs.GetString("CtryMapProgress"));
+                    if (!progressList.Contains(clearIndex.ToString()))
+                    {
+                        progressList.Add(clearIndex.ToString());
+                        PlayerPrefs.SetString("CtryMapProgress", String.Join(",", progressList));
+                    }
                     Debug.Log(PlayerPrefs.GetString("CtryMapProgress"));
                 }
+                AudioController.Instance.PlayClip(sfxClipList[3]);
                 StartCoroutine(UITKController.Instance.InitializeCountryList());
                 StartCoroutine(UITKController.Instance.InitializeStatsCountryList());
             }
@@ -326,7 +335,7 @@ public class GameManager : Singleton<GameManager>
         try
         {
             int countryIndex = countryList.IndexOf(countrySO);
-            return PlayerPrefs.GetString("CtryMapProgress")[countryIndex] == '1';
+            return Helper.ConvertStringToList(PlayerPrefs.GetString("CtryMapProgress")).Contains(countryIndex.ToString());
         }
         catch (Exception e)
         {
@@ -338,20 +347,27 @@ public class GameManager : Singleton<GameManager>
     {
         try
         {
-            List<CountrySO> clearedList = new List<CountrySO>();
-            string progress = PlayerPrefs.GetString("CtryMapProgress");
-            for (int i = 0; i < countryList.Count; i++)
+            // Get the string from PlayerPrefs and convert it to a list of strings
+            var indicesString = PlayerPrefs.GetString("CtryMapProgress");
+            var indexList = Helper.ConvertStringToList(indicesString);
+
+            // Convert each string index to int and then map to CountrySO
+            return indexList.Select(strIndex =>
             {
-                if (progress[i] == '1')
+                if (int.TryParse(strIndex, out int index))
                 {
-                    clearedList.Add(countryList[i]);
+                    return countryList[index]; // Ensure that this index is within the bounds of countryList
                 }
-            }
-            return clearedList;
+                else
+                {
+                    Debug.LogWarning($"Failed to parse '{strIndex}' to int");
+                    return null; // or handle differently
+                }
+            }).Where(country => country != null).ToList(); // Exclude null values if any parse failed
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.LogError($"An error occurred: {e.Message}");
             return new List<CountrySO>();
         }
     }

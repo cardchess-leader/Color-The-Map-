@@ -173,7 +173,7 @@ public class ProfileManager : Singleton<ProfileManager>
     /// <summary>
     /// Toggles the vibration status.
     /// </summary>
-    public void TogglVibrationStatus()
+    public void ToggleVibrationStatus()
     {
         isVibrationEnabled = (isVibrationEnabled) ? false : true;
         PlayerPrefs.SetInt("isVibrationEnabled", (isVibrationEnabled) ? 0 : 1);

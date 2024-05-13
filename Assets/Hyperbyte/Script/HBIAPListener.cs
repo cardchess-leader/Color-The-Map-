@@ -57,6 +57,7 @@ namespace Hyperbyte
                 case RewardType.REMOVE_ADS:
                     ProfileManager.Instance.SetAppAsAdFree();
                     UITKController.Instance.ShowUISegment("iap-success-popup");
+                    UITKController.Instance.UpdateIAPButton();
                     StartCoroutine(UITKController.Instance.InitializeCountryList());
                     break;
             }
