@@ -67,7 +67,15 @@ public class UITKController : Singleton<UITKController>
         flagListScreen.Q<Button>("CloseBtn").clicked += () => flagListScreen.AddToClassList("translate-down");
         themeScreen.Q<Button>("CloseBtn").clicked += () => themeScreen.AddToClassList("translate-down");
         howToScreen.Q<Button>("ContinueBtn").clicked += () => howToScreen.AddToClassList("translate-down");
-        stageClearOverlay.Q<Button>("ContinueBtn").clicked += () => stageClearOverlay.AddToClassList("hidden");
+        stageClearOverlay.Q<Button>("ContinueBtn").clicked += () =>
+        {
+            IEnumerator HideStageOverlayCoroutine()
+            {
+                yield return null;
+                stageClearOverlay.AddToClassList("hidden");
+            }
+            StartCoroutine(HideStageOverlayCoroutine());
+        };
         // Register callback for click event on ScrollContainer
         flagListScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseCtry);
         themeScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseTheme);
@@ -129,6 +137,19 @@ public class UITKController : Singleton<UITKController>
         statsCountryPopup.Q<Button>("CloseBtn").clicked += () => statsCountryPopup.AddToClassList("scale-to-zero");
         // Open Stats > Country Info Popup
         statsScreen.Q<ScrollView>().RegisterCallback<ClickEvent>(OnChooseStatsCtry);
+        // Link to web pages
+        dataSettingsScreen.Q<Button>("PrivacyPolicyBtn").clicked += () =>
+        {
+            StartCoroutine(Helper.NavigateToUrl(ProfileManager.Instance.GetAppSettings().privacyPolicyURL));
+        };
+        settingsScreen.Q<Button>("MoreGames").clicked += () =>
+        {
+            StartCoroutine(Helper.NavigateToUrl(ProfileManager.Instance.GetAppSettings().moreGamesUrl));
+        };
+        settingsScreen.Q<Button>("SupportUs").clicked += () =>
+        {
+            StartCoroutine(Helper.NavigateToUrl(ProfileManager.Instance.GetAppSettings().supportURL));
+        };
     }
     void InitializeHandler()
     {
@@ -419,13 +440,14 @@ public class UITKController : Singleton<UITKController>
         {
             return true;
         }
+
         // Create an array of all screens to check
-        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryPopup };
+        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryPopup, stageClearOverlay, adPopup, iapPopup, purchaseSuccessPopup, purchaseFailurePopup, howToScreen };
 
         // Loop through each screen and check the classes
         foreach (VisualElement screen in screens)
         {
-            if (!(screen.ClassListContains("translate-down") || screen.ClassListContains("scale-to-zero") || screen.ClassListContains("translate-right")))
+            if (!(screen.ClassListContains("translate-down") || screen.ClassListContains("scale-to-zero") || screen.ClassListContains("translate-right") || screen.ClassListContains("hidden")))
             {
                 return true;
             }

@@ -94,6 +94,11 @@ namespace Hyperbyte
 				}
 
 				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.LabelField("More Games URL : ", labelStyle, GUILayout.MaxWidth(140));
+				appSettings.moreGamesUrl = EditorGUILayout.TextField(appSettings.moreGamesUrl);
+				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.LabelField("Apple ID (iOS Only) : ", labelStyle, GUILayout.MaxWidth(140));
 				appSettings.appleID = EditorGUILayout.TextField(appSettings.appleID);
 				EditorGUILayout.EndHorizontal();

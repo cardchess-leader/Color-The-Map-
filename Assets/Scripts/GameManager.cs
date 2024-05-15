@@ -1,11 +1,9 @@
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using Hyperbyte;
 using Hyperbyte.Ads;
 
@@ -17,21 +15,20 @@ public class GameManager : Singleton<GameManager>
     public GameObject mapContainer;
     public GameObject[] paintBrushSet = new GameObject[4];
     public Color? selectedColor;
-    public Camera cameraToCapture;
     public RenderTexture renderTexture;
     public float initialOrthographicSize;
     public AudioClip uiBtnClickSound;
     public List<AudioClip> sfxClipList = new List<AudioClip>(); // 0: select paint, 1: color region, 2: invalid color, 3: clear pop
-    [System.NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
-    [System.NonSerialized] public CountrySO countrySO;
+    [NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
+    [NonSerialized] public CountrySO countrySO;
     Camera mainCamera;
-    Color[] regionsColor; // Subject Map's colors for each region
+    Color[] regionsColor;
     bool stageCleared = false;
     CountrySO rewardCountrySO;
     void OnEnable()
     {
         InitializePlayerPref();
-        Initialize();
+        InitializeGame();
         AdManager.OnRewardedAdRewardedEvent += OnRewardedAdRewarded;
     }
     void Start()
@@ -46,12 +43,8 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefs.SetInt("ThemeIndex", 0);
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
-            PlayerPrefs.SetString("CtryMapProgress", "");
+            PlayerPrefs.SetString("CtryMapProgress", string.Empty);
         }
-    }
-    void Initialize()
-    {
-        InitializeGame();
     }
     void OnRewardedAdRewarded()
     {
@@ -66,7 +59,7 @@ public class GameManager : Singleton<GameManager>
         SetTheme(0, true);
         UITKController.Instance.ShowUISegment("select-map");
     }
-    public void SetTheme(int themeIndex = 0, bool initialize = false) // -1 means just use playerpref value, no update //
+    public void SetTheme(int themeIndex = 0, bool initialize = false)
     {
         if (!initialize)
         {
@@ -92,7 +85,7 @@ public class GameManager : Singleton<GameManager>
             }
         }
         ThemeSO themeSO = themeList[PlayerPrefs.GetInt("ThemeIndex")];
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < paintBrushSet.Length; i++)
         {
             paintBrushSet[i].GetComponent<Image>().color = themeSO.themeColors[i];
         }
@@ -113,79 +106,73 @@ public class GameManager : Singleton<GameManager>
     {
         Vector2 touchPos = mainCamera.ScreenToWorldPoint(new Vector2(coordX, coordY));
         RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero);
+
+        Debug.Log("HandleMapTouch");
         if (hit.collider != null && selectedColor.HasValue)
         {
-            string colliderName = hit.collider.gameObject.name;
-            if (colliderName.Length <= 6 || !int.TryParse(colliderName.Substring(6), out int targetIndex))
+            Debug.Log("Hit");
+            if (int.TryParse(hit.collider.gameObject.name.Substring(6), out int targetIndex) && IsValidColoring(targetIndex))
             {
-                return;
+                SpriteRenderer renderer = hit.collider.GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    renderer.color = selectedColor.Value;
+                    regionsColor[targetIndex] = selectedColor.Value;
+                    AudioController.Instance.PlayClip(sfxClipList[1]);
+                    UIFeedback.Instance.PlayHapticLight();
+                    CheckForColoringComplete();
+                }
             }
-
-            Debug.Log($"[Log] adjMatrix length is: {countrySO.mapSO.adjMatrix.Count}");
-            Debug.Log($"[Log] target index is: {targetIndex}");
-
-            var indices = countrySO.mapSO.adjMatrix[targetIndex].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                .Select(index => int.TryParse(index.Trim(), out int parsedIndex) ? parsedIndex : -1)
-                                .Where(index => index != -1).ToList();
-
-            if (indices.Any(adjIndex => adjIndex >= regionsColor.Length || regionsColor[adjIndex] == selectedColor.Value))
+            else
             {
-                AudioController.Instance.PlayClip(sfxClipList[2]); // Error sound for trying to use same color with adjacent region!
-                return;
+                AudioController.Instance.PlayClip(sfxClipList[2]);
             }
-
-            SpriteRenderer renderer = hit.collider.GetComponent<SpriteRenderer>();
-            if (renderer == null)
-            {
-                return;
-            }
-
-            renderer.color = selectedColor.Value;
-            regionsColor[targetIndex] = selectedColor.Value;
-            AudioController.Instance.PlayClip(sfxClipList[1]);
-            UIFeedback.Instance.PlayHapticLight();
-            CheckForColoringComplete();
         }
+    }
+    bool IsValidColoring(int targetIndex)
+    {
+        var indices = countrySO.mapSO.adjMatrix[targetIndex]
+            .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(index => int.TryParse(index.Trim(), out int parsedIndex) ? parsedIndex : -1)
+            .Where(index => index != -1)
+            .ToList();
+
+        return !indices.Any(adjIndex => adjIndex >= regionsColor.Length || regionsColor[adjIndex] == selectedColor.Value);
     }
     void CheckForColoringComplete()
     {
-        try
+        bool complete = !regionsColor.Skip(1).Any(color => color == new Color());
+
+        if (complete && !stageCleared)
         {
-            bool complete = true;
-            for (int i = 1; i < regionsColor.Length; i++)
+            stageCleared = true;
+            UITKController.Instance.HandleStageClear(countrySO);
+            GameObject.Find("Confetti").GetComponent<ParticleSystem>().Play();
+
+            int clearIndex = countryList.IndexOf(countrySO);
+            if (clearIndex != -1)
             {
-                if (regionsColor[i] == new Color())
+                var progressList = Helper.ConvertStringToList(PlayerPrefs.GetString("CtryMapProgress"));
+                if (!progressList.Contains(clearIndex.ToString()))
                 {
-                    complete = false;
-                    break;
+                    progressList.Add(clearIndex.ToString());
+                    PlayerPrefs.SetString("CtryMapProgress", string.Join(",", progressList));
                 }
             }
-            if (complete && !stageCleared)
+
+            AudioController.Instance.PlayClip(sfxClipList[3]);
+            StartCoroutine(UITKController.Instance.InitializeCountryList());
+            StartCoroutine(UITKController.Instance.InitializeStatsCountryList());
+
+            if (PhotoController.Instance != null)
             {
-                stageCleared = true;
-                UITKController.Instance.HandleStageClear(countrySO);
-                GameObject.Find("Confetti").GetComponent<ParticleSystem>().Play();
-                int clearIndex = countryList.IndexOf(countrySO); // index 0 is the first country
-                if (clearIndex != -1)
-                {
-                    List<string> progressList = Helper.ConvertStringToList(PlayerPrefs.GetString("CtryMapProgress"));
-                    if (!progressList.Contains(clearIndex.ToString()))
-                    {
-                        progressList.Add(clearIndex.ToString());
-                        PlayerPrefs.SetString("CtryMapProgress", String.Join(",", progressList));
-                    }
-                    Debug.Log(PlayerPrefs.GetString("CtryMapProgress"));
-                }
-                AudioController.Instance.PlayClip(sfxClipList[3]);
-                StartCoroutine(UITKController.Instance.InitializeCountryList());
-                StartCoroutine(UITKController.Instance.InitializeStatsCountryList());
+                PhotoController.Instance.gameObject.SetActive(true);
             }
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
+
+            LeaderboardController.Instance.UpdateScore();
         }
     }
+
     void SetupCountry(CountrySO countrySO)
     {
         SetCountryMap(countrySO);
@@ -205,42 +192,51 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            switch (countrySO.terms)
-            {
-                case CountrySO.Terms.Free:
-                    SetupCountry(countrySO);
-                    break;
-                case CountrySO.Terms.WatchAds:
-                    rewardCountrySO = countrySO;
-                    UITKController.Instance.ShowUISegment("ad-popup");
-                    break;
-                case CountrySO.Terms.Locked:
-                    UITKController.Instance.ShowUISegment("iap-popup");
-                    break;
-            }
+            SetupCountry(countrySO);
+            // switch (countrySO.terms)
+            // {
+            //     case CountrySO.Terms.Free:
+            //         SetupCountry(countrySO);
+            //         break;
+            //     case CountrySO.Terms.WatchAds:
+            //         rewardCountrySO = countrySO;
+            //         UITKController.Instance.ShowUISegment("ad-popup");
+            //         break;
+            //     case CountrySO.Terms.Locked:
+            //         UITKController.Instance.ShowUISegment("iap-popup");
+            //         break;
+            // }
         }
     }
     public void SetCountryMap(CountrySO countrySO)
     {
-        // validation // 
         if (countrySO == null)
         {
             return;
         }
+
         this.countrySO = countrySO;
+
         if (mapContainer.transform.childCount > 0)
         {
             Destroy(mapContainer.transform.GetChild(0).gameObject);
         }
+
         InitializeMainCamera();
         GameObject countryMap = Instantiate(countrySO.countryMapPrefab, Vector3.zero, Quaternion.identity, mapContainer.transform);
         regionsColor = new Color[countrySO.mapSO.adjMatrix.Count];
         stageCleared = false;
+
+        if (PhotoController.Instance != null)
+        {
+            PhotoController.Instance.gameObject.SetActive(false);
+        }
     }
+
     void InitializeMainCamera()
     {
-        mainCamera.transform.position = new Vector3(0, 0, -10); // Example position
-        mainCamera.transform.rotation = Quaternion.Euler(0f, 0f, 0f); // No rotation necessary in 2D, but just to be clear
+        mainCamera.transform.position = new Vector3(0, 0, -10);
+        mainCamera.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         mainCamera.orthographicSize = 5;
     }
     public CountrySO GetCountrySO(string ctryName)
@@ -256,49 +252,6 @@ public class GameManager : Singleton<GameManager>
     {
         var sortedCountryList = countryList.OrderByDescending(ctry => ctry.area).ToList();
         return sortedCountryList.IndexOf(GetCountrySO(ctryName)) + 1;
-    }
-    public void Capture()
-    {
-        try
-        {
-            RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
-            rt.antiAliasing = 2; // Set anti-aliasing as needed
-            rt.filterMode = FilterMode.Bilinear; // Set the filter mode
-            rt.wrapMode = TextureWrapMode.Clamp; // Set the wrap mode
-
-            cameraToCapture.enabled = true;
-            cameraToCapture.targetTexture = rt;
-            cameraToCapture.Render(); // Render the camera's view to its RenderTexture
-
-            Texture2D texture = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
-            RenderTexture.active = rt;
-            texture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            texture.Apply();
-
-#if UNITY_EDITOR
-            byte[] bytes = texture.EncodeToPNG();
-
-            File.WriteAllBytes(Application.persistentDataPath + "/capturedImage.png", bytes);
-            Debug.Log("Saved Image to " + Application.persistentDataPath + "/capturedImage.png");
-#elif UNITY_ANDROID
-	        NativeGallery.Permission permission = NativeGallery.SaveImageToGallery(texture, "ColorTheMap", $"{countrySO.ctryName}.png", ( success, path ) => Debug.Log( "Media save result: " + success + " " + path ) );
-#elif UNITY_IOS
-#endif
-            Destroy(texture);
-            Destroy(rt);
-            // Show message prompt (store successful) //
-            GameObject.Find("Camera Save Message").GetComponent<Animator>().Play("Text Fade", 0, 0);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Failed to capture and save image: " + ex.Message);
-        }
-        finally
-        {
-            RenderTexture.active = null;
-            cameraToCapture.targetTexture = null;
-            cameraToCapture.enabled = false;
-        }
     }
     void SetParticleSystemGradient(ThemeSO themeSO)
     {
@@ -347,23 +300,21 @@ public class GameManager : Singleton<GameManager>
     {
         try
         {
-            // Get the string from PlayerPrefs and convert it to a list of strings
             var indicesString = PlayerPrefs.GetString("CtryMapProgress");
             var indexList = Helper.ConvertStringToList(indicesString);
 
-            // Convert each string index to int and then map to CountrySO
             return indexList.Select(strIndex =>
             {
                 if (int.TryParse(strIndex, out int index))
                 {
-                    return countryList[index]; // Ensure that this index is within the bounds of countryList
+                    return countryList[index];
                 }
                 else
                 {
                     Debug.LogWarning($"Failed to parse '{strIndex}' to int");
-                    return null; // or handle differently
+                    return null;
                 }
-            }).Where(country => country != null).ToList(); // Exclude null values if any parse failed
+            }).Where(country => country != null).ToList();
         }
         catch (Exception e)
         {

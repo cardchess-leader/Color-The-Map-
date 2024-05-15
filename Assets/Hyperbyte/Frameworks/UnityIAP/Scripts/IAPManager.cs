@@ -152,6 +152,7 @@ namespace Hyperbyte
 		/// </summary>
         public void OnPurchaseFailed(Product i, PurchaseFailureReason p) 
 		{
+			Debug.Log("PurchaseFailureReason is: " + p);
 			OnPurchaseFailure(p.ToString());
         }
 #endif

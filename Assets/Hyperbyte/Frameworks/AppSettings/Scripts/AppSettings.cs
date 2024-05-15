@@ -34,6 +34,9 @@ namespace Hyperbyte
 		// Support url is support is enabled.
 		public string supportURL;
 
+		// Other Game url
+		public string moreGamesUrl;
+
 		// Apple Id to nevigate to store.
 		public string appleID;
 

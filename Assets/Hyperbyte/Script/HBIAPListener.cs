@@ -69,13 +69,6 @@ namespace Hyperbyte
 
         void OnPurchaseFailed(string reason)
         {
-            // new CommonDialogueInfo().SetTitle(LocalizationManager.Instance.GetTextWithTag("txtOops")).
-            // SetMessage(LocalizationManager.Instance.GetTextWithTag("txtPurchaseFail")).
-            // SetMessageType(CommonDialogueMessageType.Info).
-            // SetOnConfirmButtonClickListener(() =>
-            // {
-            //     UIController.Instance.commonMessageScreen.Deactivate();
-            // }).Show();
             UITKController.Instance.ShowUISegment("iap-fail-popup");
             Debug.Log("reason is: " + reason);
         }
@@ -84,11 +77,11 @@ namespace Hyperbyte
         {
             if (result)
             {
-                // UIController.Instance.ShowMessage(("Restore Successful"), LocalizationManager.Instance.GetTextWithTag("txtInAppRestored"));
+                Debug.Log("Restore Successful");
             }
             else
             {
-                // UIController.Instance.ShowMessage(LocalizationManager.Instance.GetTextWithTag("txtAlert"), LocalizationManager.Instance.GetTextWithTag("txtNoRestore"));
+                Debug.Log("Restore Not Successful");
             }
         }
     }

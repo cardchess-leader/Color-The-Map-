@@ -108,4 +108,9 @@ public static class Helper
         }
         return new List<string>(str.Split(','));
     }
+    public static IEnumerator NavigateToUrl(string url)
+    {
+        yield return new WaitForSeconds(0.2F);
+        Application.OpenURL(url);
+    }
 }

@@ -113,6 +113,7 @@ public class GestureController : MonoBehaviour
             // Calculate the factor of zoom based on the scale multiplier
             float scaleFactor = 1 + (scaleGesture.ScaleMultiplier - 1) * zoomSensitivity;
             float newOrthographicSize = Mathf.Clamp(targetCamera.orthographicSize / scaleFactor, GameManager.Instance.initialOrthographicSize / GameManager.Instance.countrySO.maxZoom, GameManager.Instance.initialOrthographicSize / GameManager.Instance.minZoom);
+            Debug.Log("ScaleFactor is: " + GameManager.Instance.initialOrthographicSize / newOrthographicSize);
 
             // Calculate the new pinch center in screen coordinates
             Vector2 pinchCenter = new Vector2(gesture.FocusX, gesture.FocusY);

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "680607344826",
+    "project_id": "color-the-map",
+    "storage_bucket": "color-the-map.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680607344826:android:f63daaf034ced826fe3a83",
+        "android_client_info": {
+          "package_name": "com.boardcollie.colorthemap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHod7YTGJ1LLcI9PICLIRCEEsmcbQ5ySU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
