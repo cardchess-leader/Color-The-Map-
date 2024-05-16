@@ -142,7 +142,7 @@ namespace Hyperbyte
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs e)
         {
 			//~~~~~~~~~~~~~~ You can verify receipt here before processing rewards. ~~~~~~~~~~~~~~//
-			// Debug.Log("receipt is: " + e.purchasedProduct.receipt);
+			Debug.Log("receipt is: " + e.purchasedProduct.receipt);
 			ProcessPurchaseRewards(e.purchasedProduct.definition.id);
 			return PurchaseProcessingResult.Complete;
         }
@@ -245,6 +245,10 @@ namespace Hyperbyte
 				if (product == null) {	}
 				else if (!product.availableToPurchase) { }
 				else { storeController.InitiatePurchase(product); }
+			} 
+			else 
+			{
+				UITKController.Instance.ShowUISegment("iap-fail-popup");
 			}
 #else
 			IAPManager.Instance.OnSandboxPurchaseSuccess(productInfo);

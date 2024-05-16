@@ -192,20 +192,20 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            SetupCountry(countrySO);
-            // switch (countrySO.terms)
-            // {
-            //     case CountrySO.Terms.Free:
-            //         SetupCountry(countrySO);
-            //         break;
-            //     case CountrySO.Terms.WatchAds:
-            //         rewardCountrySO = countrySO;
-            //         UITKController.Instance.ShowUISegment("ad-popup");
-            //         break;
-            //     case CountrySO.Terms.Locked:
-            //         UITKController.Instance.ShowUISegment("iap-popup");
-            //         break;
-            // }
+            // SetupCountry(countrySO);
+            switch (countrySO.terms)
+            {
+                case CountrySO.Terms.Free:
+                    SetupCountry(countrySO);
+                    break;
+                case CountrySO.Terms.WatchAds:
+                    rewardCountrySO = countrySO;
+                    UITKController.Instance.ShowUISegment("ad-popup");
+                    break;
+                case CountrySO.Terms.Locked:
+                    UITKController.Instance.ShowUISegment("iap-popup");
+                    break;
+            }
         }
     }
     public void SetCountryMap(CountrySO countrySO)
@@ -305,7 +305,7 @@ public class GameManager : Singleton<GameManager>
 
             return indexList.Select(strIndex =>
             {
-                if (int.TryParse(strIndex, out int index))
+                if (int.TryParse(strIndex, out int index) && index < countryList.Count)
                 {
                     return countryList[index];
                 }
