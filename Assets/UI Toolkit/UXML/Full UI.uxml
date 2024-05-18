@@ -162,7 +162,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="setting-item-icon-container">
                         <ui:VisualElement name="VisualElement" class="setting-item-icon-container2" style="background-color: rgb(173, 122, 86);">
-                            <ui:VisualElement class="setting-item-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/coffee(1).png?fileID=21300000&amp;guid=71797ef336200db48b41197f8d92cc2c&amp;type=3#coffee(1)&quot;);" />
+                            <ui:VisualElement class="setting-item-icon" style="background-image: url(&quot;project://database/Assets/Images/Icons/coffee.png?fileID=21300000&amp;guid=71797ef336200db48b41197f8d92cc2c&amp;type=3#coffee&quot;);" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:Button>
@@ -312,5 +312,31 @@
         <ui:VisualElement name="BtnContainer" style="flex-grow: 0; padding-top: 100px; padding-right: 100px; padding-bottom: 150px; padding-left: 100px; margin-top: auto;">
             <ui:Button text="Okay" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ContinueBtn" class="consent-agree-btn ui-btn" style="margin-bottom: 50px; background-color: rgb(21, 204, 21);" />
         </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="RateUsPopup" class="screen scale-to-zero" style="flex-grow: 1; position: absolute; background-color: rgb(242, 242, 242); left: 0; top: 0; right: 0; bottom: 0; transition-property: scale; transition-duration: 0.25s; transition-timing-function: ease-out; display: flex;">
+        <ui:VisualElement name="TitleContainer" style="flex-grow: 0; margin-top: 150px; margin-bottom: 100px; flex-shrink: 0; flex-direction: row; justify-content: center;">
+            <ui:Label tabindex="-1" text="Rate Us!" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 70px; -unity-font-style: bold; -unity-text-align: middle-center; text-overflow: ellipsis;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Layout" class="settings-subpage-layout" style="margin-top: 80px; margin-right: 50px; margin-bottom: 50px; margin-left: 50px; padding-top: 100px; padding-right: 100px; padding-bottom: 100px; padding-left: 100px; flex-grow: 1;">
+            <ui:Label tabindex="-1" text="&lt;line-height=140%&gt;Your Ratings &amp; Feedbacks would help us improve our game greatly!&#10;&#10;If you are enjoying our game, would you please rate our game from the Google Play?" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 50px; -unity-font-style: bold; white-space: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; display: flex;" />
+            <ui:VisualElement name="StarImage" style="flex-grow: 1; height: auto; background-image: url(&quot;project://database/Assets/Images/Icons/rating.png?fileID=2800000&amp;guid=48e1844692ad97f4084fee94071739fd&amp;type=3#rating&quot;); -unity-background-scale-mode: scale-to-fit; margin-top: 100px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="BtnContainer" style="flex-grow: 0; padding-top: 100px; padding-right: 100px; padding-bottom: 150px; padding-left: 100px; margin-top: auto;">
+            <ui:Button text="Okay" parse-escape-sequences="true" display-tooltip-when-elided="true" name="OkayBtn" class="consent-agree-btn ui-btn" style="margin-bottom: 50px; background-color: rgb(21, 204, 21);" />
+        </ui:VisualElement>
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseBtn" class="ui-btn" style="position: absolute; top: 50px; right: 50px; width: 100px; height: 100px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-color: rgba(0, 0, 0, 0); background-image: url(&quot;project://database/Assets/Images/Icons/cross.png?fileID=2800000&amp;guid=79cb23d92f9c2b94496a9e1e1773d373&amp;type=3#cross&quot;); -unity-background-image-tint-color: rgb(82, 82, 82); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);" />
+    </ui:VisualElement>
+    <ui:VisualElement name="QuitGamePopup" class="screen scale-to-zero" style="flex-grow: 1; position: absolute; background-color: rgb(242, 242, 242); left: 0; top: 0; right: 0; bottom: 0; transition-property: scale; transition-duration: 0.25s; transition-timing-function: ease-out; display: flex;">
+        <ui:VisualElement name="TitleContainer" style="flex-grow: 0; margin-top: 150px; margin-bottom: 100px; flex-shrink: 0; flex-direction: row; justify-content: center;">
+            <ui:Label tabindex="-1" text="Quit Game?" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" style="padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 70px; -unity-font-style: bold; -unity-text-align: middle-center; text-overflow: ellipsis;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Layout" class="settings-subpage-layout" style="margin-top: 80px; margin-right: 50px; margin-bottom: 50px; margin-left: 50px; padding-top: 100px; padding-right: 100px; padding-bottom: 100px; padding-left: 100px; flex-grow: 0;">
+            <ui:Label tabindex="-1" text="&lt;line-height=120%&gt;Do you really want to quit game? &#10;&#10;You can always come back later!" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 50px; -unity-font-style: bold; white-space: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; display: flex;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="BtnContainer" style="flex-grow: 0; padding-top: 100px; padding-right: 100px; padding-bottom: 150px; padding-left: 100px; margin-top: auto;">
+            <ui:Button text="Stay" parse-escape-sequences="true" display-tooltip-when-elided="true" name="StayBtn" class="consent-agree-btn ui-btn" style="margin-bottom: 50px; background-color: rgb(21, 204, 21);" />
+            <ui:Button text="Quit" parse-escape-sequences="true" display-tooltip-when-elided="true" name="QuitBtn" class="consent-agree-btn ui-btn" style="margin-bottom: 50px; background-color: rgb(255, 170, 0);" />
+        </ui:VisualElement>
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="CloseBtn" class="ui-btn" style="position: absolute; top: 50px; right: 50px; width: 100px; height: 100px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-color: rgba(0, 0, 0, 0); background-image: url(&quot;project://database/Assets/Images/Icons/cross.png?fileID=2800000&amp;guid=79cb23d92f9c2b94496a9e1e1773d373&amp;type=3#cross&quot;); -unity-background-image-tint-color: rgb(82, 82, 82); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0);" />
     </ui:VisualElement>
 </ui:UXML>

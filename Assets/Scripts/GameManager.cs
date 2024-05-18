@@ -16,9 +16,10 @@ public class GameManager : Singleton<GameManager>
     public GameObject[] paintBrushSet = new GameObject[4];
     public Color? selectedColor;
     public RenderTexture renderTexture;
-    public float initialOrthographicSize;
     public AudioClip uiBtnClickSound;
     public List<AudioClip> sfxClipList = new List<AudioClip>(); // 0: select paint, 1: color region, 2: invalid color, 3: clear pop
+    public List<int> showRatingIndexList = new List<int>();
+    [NonSerialized] public float initialOrthographicSize;
     [NonSerialized] public float minZoom = 0.5f; // Minimum zoom limit
     [NonSerialized] public CountrySO countrySO;
     Camera mainCamera;
@@ -35,6 +36,29 @@ public class GameManager : Singleton<GameManager>
     {
         mainCamera = Camera.main;
         initialOrthographicSize = mainCamera.orthographicSize;
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ProcessBackButton();
+        }
+    }
+    void ProcessBackButton()
+    {
+        UITKController.Instance.ShowUISegment("quit-game-popup");
+    }
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_ANDROID
+                //On Android, on quitting app, App actully won't quit but will be sent to background. So it can be load fast while reopening. 
+				AndroidJavaObject activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer").GetStatic<AndroidJavaObject>("currentActivity");
+				activity.Call<bool>("moveTaskToBack" , true); 
+#elif UNITY_IOS
+				Application.Quit();
+#endif
     }
     void InitializePlayerPref()
     {
@@ -70,6 +94,7 @@ public class GameManager : Singleton<GameManager>
             else
             {
                 PlayerPrefs.SetInt("ThemeIndex", themeIndex);
+                ResetColor();
                 if (mapContainer.transform.childCount > 0)
                 {
                     // Reset the map with default colors (grey)
@@ -101,6 +126,14 @@ public class GameManager : Singleton<GameManager>
         paintBrushSet[index].transform.GetChild(0).GetComponent<Image>().enabled = true;
         AudioController.Instance.PlayClip(sfxClipList[0]);
         UIFeedback.Instance.PlayHapticLight();
+    }
+    public void ResetColor()
+    {
+        selectedColor = null;
+        foreach (GameObject brush in paintBrushSet)
+        {
+            brush.transform.GetChild(0).GetComponent<Image>().enabled = false;
+        }
     }
     public void HandleMapTouch(float coordX, float coordY)
     {
@@ -320,6 +353,28 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError($"An error occurred: {e.Message}");
             return new List<CountrySO>();
+        }
+    }
+
+    public void RateApp()
+    {
+#if UNITY_IOS
+        Application.OpenURL("itms-apps://itunes.apple.com/app/id" + ProfileManager.Instance.GetAppSettings().appleID);
+#elif UNITY_ANDROID
+        Application.OpenURL("https://play.google.com/store/apps/details?id=" + Application.identifier);
+#endif
+        PlayerPrefs.SetInt("AppRated", 1);
+    }
+
+    public void TryShowingRatingPopup()
+    {
+        if (PlayerPrefs.GetInt("AppRated") == 0)
+        {
+            int numClearCtry = Helper.ConvertStringToList(PlayerPrefs.GetString("CtryMapProgress")).Count;
+            if (showRatingIndexList.Contains(numClearCtry))
+            {
+                UITKController.Instance.ShowUISegment("rate-us-popup");
+            }
         }
     }
 }

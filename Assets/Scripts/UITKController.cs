@@ -23,6 +23,8 @@ public class UITKController : Singleton<UITKController>
     VisualElement iapPopup;
     VisualElement purchaseSuccessPopup;
     VisualElement purchaseFailurePopup;
+    VisualElement rateUsPopup;
+    VisualElement quitGamePopup;
     VisualElement howToScreen;
     bool isOverlayScreenTransitioning = false;
     void OnEnable()
@@ -54,6 +56,8 @@ public class UITKController : Singleton<UITKController>
         iapPopup = root.Q("IAPPopup");
         purchaseSuccessPopup = root.Q("PurchaseSuccessPopup");
         purchaseFailurePopup = root.Q("PurchaseFailurePopup");
+        rateUsPopup = root.Q("RateUsPopup");
+        quitGamePopup = root.Q("QuitGamePopup");
     }
     void InitializeMainPageHandler()
     {
@@ -75,10 +79,19 @@ public class UITKController : Singleton<UITKController>
                 stageClearOverlay.AddToClassList("hidden");
             }
             StartCoroutine(HideStageOverlayCoroutine());
+            GameManager.Instance.TryShowingRatingPopup();
         };
         // Register callback for click event on ScrollContainer
         flagListScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseCtry);
         themeScreen.Q("ScrollContainer").RegisterCallback<ClickEvent>(OnChooseTheme);
+    }
+    void InitializeOtherPopupHandler()
+    {
+        rateUsPopup.Q<Button>("CloseBtn").clicked += () => rateUsPopup.AddToClassList("scale-to-zero");
+        rateUsPopup.Q<Button>("OkayBtn").clicked += () => GameManager.Instance.RateApp();
+        quitGamePopup.Q<Button>("CloseBtn").clicked += () => quitGamePopup.AddToClassList("scale-to-zero");
+        quitGamePopup.Q<Button>("StayBtn").clicked += () => quitGamePopup.AddToClassList("scale-to-zero");
+        quitGamePopup.Q<Button>("QuitBtn").clicked += () => GameManager.Instance.QuitGame();
     }
     void InitializeAdIapPageHandler()
     {
@@ -157,6 +170,7 @@ public class UITKController : Singleton<UITKController>
         InitializeMainPageHandler();
         InitializeAdIapPageHandler();
         InitializeSettingsPageHandler();
+        InitializeOtherPopupHandler();
     }
     IEnumerator InitAfterFirstFrame()
     {
@@ -419,6 +433,12 @@ public class UITKController : Singleton<UITKController>
             case "iap-fail-popup":
                 purchaseFailurePopup.RemoveFromClassList("scale-to-zero");
                 break;
+            case "rate-us-popup":
+                rateUsPopup.RemoveFromClassList("scale-to-zero");
+                break;
+            case "quit-game-popup":
+                quitGamePopup.RemoveFromClassList("scale-to-zero");
+                break;
         }
     }
     public void HideUISegment(string segmentName)
@@ -442,7 +462,7 @@ public class UITKController : Singleton<UITKController>
         }
 
         // Create an array of all screens to check
-        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryPopup, stageClearOverlay, adPopup, iapPopup, purchaseSuccessPopup, purchaseFailurePopup, howToScreen };
+        VisualElement[] screens = { themeScreen, flagListScreen, settingsScreen, aboutScreen, dataSettingsScreen, statsScreen, statsCountryPopup, stageClearOverlay, adPopup, iapPopup, purchaseSuccessPopup, purchaseFailurePopup, howToScreen, rateUsPopup, quitGamePopup };
 
         // Loop through each screen and check the classes
         foreach (VisualElement screen in screens)
