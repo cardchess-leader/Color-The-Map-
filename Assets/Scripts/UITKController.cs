@@ -411,7 +411,7 @@ public class UITKController : Singleton<UITKController>
             scrollview.Add(row);
         }
     }
-    public void ShowUISegment(string segmentName)
+    public void ShowUISegment(string segmentName, string additionalParam = "")
     {
         switch (segmentName)
         {
@@ -423,6 +423,7 @@ public class UITKController : Singleton<UITKController>
                 break;
             case "ad-popup":
                 adPopup.RemoveFromClassList("scale-to-zero");
+                adPopup.Q<Label>("MainText").text = $"<line-height=120%>We keep our games free by showing ads.\n\nMost of our maps are free to play, but some maps require you to watch ads.\n\nWould you like to watch Ads to start coloring {additionalParam} map?";
                 break;
             case "iap-popup":
                 iapPopup.RemoveFromClassList("scale-to-zero");
@@ -480,6 +481,6 @@ public class UITKController : Singleton<UITKController>
         stageClearOverlay.Q("TitleContainer").Q<Label>("Title").text = $"Congratulations!\nYou just colored all {ctrySO.mapSO.numRegions} regions!";
         Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctrySO.ctryName}");
         stageClearOverlay.Q("Flag").style.backgroundImage = new StyleBackground(flagImage);
-        stageClearOverlay.Q<Label>("FunFact").text = ctrySO.funFact;
+        stageClearOverlay.Q<Label>("FunFact").text = $"<line-height=140%>{ctrySO.funFact}</line-height>";
     }
 }

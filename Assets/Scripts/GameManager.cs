@@ -36,12 +36,38 @@ public class GameManager : Singleton<GameManager>
     {
         mainCamera = Camera.main;
         initialOrthographicSize = mainCamera.orthographicSize;
+        // TestAdjMatrix(); // TEMP: Comment in production! //
     }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ProcessBackButton();
+        }
+    }
+    void TestAdjMatrix() // This is temp method //
+    {
+        foreach (CountrySO ctrySO in countryList)
+        {
+            MapSO mapSO = ctrySO.mapSO;
+            for (int i = 1; i < mapSO.adjMatrix.Count; i++)
+            {
+                foreach (string indexStr in mapSO.adjMatrix[i].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    try
+                    {
+                        int index = int.Parse(indexStr);
+                        if (!mapSO.adjMatrix[index].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList().Contains(i.ToString()))
+                        {
+                            Debug.Log($"{ctrySO.ctryName} has error at index {i}, {indexStr}");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("Error at: " + ctrySO.ctryName + "index : " + i.ToString() + ", " + indexStr);
+                    }
+                }
+            }
         }
     }
     void ProcessBackButton()
@@ -68,6 +94,7 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefs.SetInt("Initialize", 1);
             PlayerPrefs.SetInt("VersionCode", 0);
             PlayerPrefs.SetString("CtryMapProgress", string.Empty);
+            PlayerPrefs.SetInt("ClearCount", 0);
         }
     }
     void OnRewardedAdRewarded()
@@ -203,6 +230,7 @@ public class GameManager : Singleton<GameManager>
             }
 
             LeaderboardController.Instance.UpdateScore();
+            PlayerPrefs.SetInt("ClearCount", PlayerPrefs.GetInt("ClearCount") + 1);
         }
     }
 
@@ -225,7 +253,7 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            // SetupCountry(countrySO);
+            // SetupCountry(countrySO); // TEMP: Force Enable All Countries //
             switch (countrySO.terms)
             {
                 case CountrySO.Terms.Free:
@@ -233,7 +261,7 @@ public class GameManager : Singleton<GameManager>
                     break;
                 case CountrySO.Terms.WatchAds:
                     rewardCountrySO = countrySO;
-                    UITKController.Instance.ShowUISegment("ad-popup");
+                    UITKController.Instance.ShowUISegment("ad-popup", ctryName);
                     break;
                 case CountrySO.Terms.Locked:
                     UITKController.Instance.ShowUISegment("iap-popup");
@@ -370,8 +398,8 @@ public class GameManager : Singleton<GameManager>
     {
         if (PlayerPrefs.GetInt("AppRated") == 0)
         {
-            int numClearCtry = Helper.ConvertStringToList(PlayerPrefs.GetString("CtryMapProgress")).Count;
-            if (showRatingIndexList.Contains(numClearCtry))
+            int clearCount = PlayerPrefs.GetInt("ClearCount");
+            if (showRatingIndexList.Contains(clearCount))
             {
                 UITKController.Instance.ShowUISegment("rate-us-popup");
             }
