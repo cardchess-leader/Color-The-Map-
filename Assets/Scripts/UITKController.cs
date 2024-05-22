@@ -140,6 +140,10 @@ public class UITKController : Singleton<UITKController>
             ProfileManager.Instance.ToggleMusicStatus();
             UpdateMusicIcon();
         };
+        settingsScreen.Q<Button>("RateOurApp").clicked += () =>
+        {
+            GameManager.Instance.RateApp();
+        };
         settingsScreen.Q<Button>("DataSettings").clicked += () => dataSettingsScreen.RemoveFromClassList("translate-right");
         settingsScreen.Q<Button>("Stats").clicked += () => statsScreen.RemoveFromClassList("translate-right");
         // Close Settings & Settings subpages

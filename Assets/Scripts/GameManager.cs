@@ -253,20 +253,20 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            // SetupCountry(countrySO); // TEMP: Force Enable All Countries //
-            switch (countrySO.terms)
-            {
-                case CountrySO.Terms.Free:
-                    SetupCountry(countrySO);
-                    break;
-                case CountrySO.Terms.WatchAds:
-                    rewardCountrySO = countrySO;
-                    UITKController.Instance.ShowUISegment("ad-popup", ctryName);
-                    break;
-                case CountrySO.Terms.Locked:
-                    UITKController.Instance.ShowUISegment("iap-popup");
-                    break;
-            }
+            SetupCountry(countrySO); // TEMP: Force Enable All Countries //
+            // switch (countrySO.terms)
+            // {
+            //     case CountrySO.Terms.Free:
+            //         SetupCountry(countrySO);
+            //         break;
+            //     case CountrySO.Terms.WatchAds:
+            //         rewardCountrySO = countrySO;
+            //         UITKController.Instance.ShowUISegment("ad-popup", ctryName);
+            //         break;
+            //     case CountrySO.Terms.Locked:
+            //         UITKController.Instance.ShowUISegment("iap-popup");
+            //         break;
+            // }
         }
     }
     public void SetCountryMap(CountrySO countrySO)
