@@ -21,6 +21,7 @@ public class CountrySO : ScriptableObject
         Locked
     }
     public string ctryName;
+    public string capital;
     public Continent continent;
     public Terms terms;
     public float maxZoom = 2;

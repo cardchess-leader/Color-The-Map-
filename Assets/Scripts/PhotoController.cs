@@ -43,6 +43,11 @@ public class PhotoController : Singleton<PhotoController>
 
     public void Capture()
     {
+        if (!ProfileManager.Instance.IsAppAdFree())
+        {
+            UITKController.Instance.ShowUISegment("iap-popup");
+            return;
+        }
         if (cameraToCapture == null)
         {
             Debug.LogError("Camera to capture is not assigned.");

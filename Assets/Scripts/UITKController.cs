@@ -159,6 +159,18 @@ public class UITKController : Singleton<UITKController>
         {
             StartCoroutine(Helper.NavigateToUrl(ProfileManager.Instance.GetAppSettings().privacyPolicyURL));
         };
+        // Data Settings Consent
+        dataSettingsScreen.Q<Button>("YESBtn").clicked += () =>
+        {
+            AdManager.Instance.SetConsentStatus(true);
+            dataSettingsScreen.AddToClassList("translate-right");
+        };
+        dataSettingsScreen.Q<Button>("NOBtn").clicked += () =>
+        {
+            AdManager.Instance.SetConsentStatus(false);
+            dataSettingsScreen.AddToClassList("translate-right");
+        };
+
         settingsScreen.Q<Button>("MoreGames").clicked += () =>
         {
             StartCoroutine(Helper.NavigateToUrl(ProfileManager.Instance.GetAppSettings().moreGamesUrl));
@@ -388,6 +400,18 @@ public class UITKController : Singleton<UITKController>
         ScrollView scrollview = root.Q("StatsScreen").Q<ScrollView>();
         scrollview.Clear();
         List<CountrySO> countryList = GameManager.Instance.ClearedCtryList();
+        if (countryList.Count == 0)
+        {
+            statsScreen.Q<Label>("Label1").text = $"Start your coloring journey!";
+        }
+        else if (countryList.Count < GameManager.Instance.countryList.Count)
+        {
+            statsScreen.Q<Label>("Label1").text = $"Great Progress!";
+        }
+        else
+        {
+            statsScreen.Q<Label>("Label1").text = $"Awesome! You've colored all maps!";
+        }
         statsScreen.Q<Label>("Label2").text = $"You have colored {countryList.Count} country maps!";
         for (int i = 0; i < Mathf.Ceil(countryList.Count / 5f); i++)
         {

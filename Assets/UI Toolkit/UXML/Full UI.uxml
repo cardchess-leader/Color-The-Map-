@@ -116,7 +116,7 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:Button>
-                <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RestoreInApps" class="setting-item ui-btn">
+                <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RestoreInApps" class="setting-item ui-btn" style="display: none;">
                     <ui:VisualElement name="VisualElement" class="setting-item-text-container">
                         <ui:Label tabindex="-1" text="Restore InApps" parse-escape-sequences="true" display-tooltip-when-elided="true" class="setting-item-text" />
                     </ui:VisualElement>
@@ -193,8 +193,8 @@
             </ui:VisualElement>
         </ui:ScrollView>
         <ui:VisualElement name="BtnContainer" style="flex-grow: 0; padding-top: 0; padding-right: 100px; padding-bottom: 100px; padding-left: 100px; margin-top: 50px; flex-shrink: 0;">
-            <ui:Button text="Continue" parse-escape-sequences="true" display-tooltip-when-elided="true" class="consent-agree-btn ui-btn" style="margin-bottom: 50px;" />
-            <ui:Button text="Not Now" parse-escape-sequences="true" display-tooltip-when-elided="true" class="consent-agree-btn ui-btn" style="width: auto; height: auto; font-size: 50px; background-color: rgb(255, 170, 0); margin-bottom: 0;" />
+            <ui:Button text="Continue" parse-escape-sequences="true" display-tooltip-when-elided="true" name="YESBtn" class="consent-agree-btn ui-btn" style="margin-bottom: 50px;" />
+            <ui:Button text="Not Now" parse-escape-sequences="true" display-tooltip-when-elided="true" name="NOBtn" class="consent-agree-btn ui-btn" style="width: auto; height: auto; font-size: 50px; background-color: rgb(255, 170, 0); margin-bottom: 0;" />
         </ui:VisualElement>
         <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="BackBtn" class="ui-btn" style="position: absolute; top: 75px; width: 100px; height: 100px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; background-color: rgba(0, 0, 0, 0); background-image: url(&quot;project://database/Assets/Images/Icons/left-arrow.png?fileID=2800000&amp;guid=d09d30e96487a4379a5672e4a5acb742&amp;type=3#left-arrow&quot;); -unity-background-image-tint-color: rgb(82, 82, 82); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-left-color: rgba(0, 0, 0, 0); border-right-color: rgba(0, 0, 0, 0); border-top-color: rgba(0, 0, 0, 0); border-bottom-color: rgba(0, 0, 0, 0); left: 50px;" />
     </ui:VisualElement>
@@ -282,7 +282,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="Layout" class="settings-subpage-layout" style="margin-top: 25px; margin-right: 50px; margin-bottom: 50px; margin-left: 50px; padding-top: 100px; padding-right: 100px; padding-bottom: 100px; padding-left: 100px; flex-grow: 0;">
             <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
-                <ui:Label tabindex="-1" text="- &lt;indent=7%&gt;&lt;color=#51BBB2&gt;Access to 36 different color themes for map coloring!&lt;/color&gt;&lt;/indent&gt;&#10;&#10;- &lt;indent=7%&gt;&lt;color=#EF724D&gt;Access to all 155 country maps, without any ads!&lt;/color&gt;&lt;/indent&gt;&#10;&#10;- &lt;indent=7%&gt;&lt;color=#4D9D59&gt;You can store the map-only image of your colored map!&lt;/color&gt;&lt;/indent&gt;" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 50px; -unity-font-style: bold; white-space: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+                <ui:Label tabindex="-1" text="- &lt;indent=7%&gt;&lt;color=#51BBB2&gt;Access to 36 different color themes for map coloring!&lt;/color&gt;&lt;/indent&gt;&#10;&#10;- &lt;indent=7%&gt;&lt;color=#EF724D&gt;Access to all 150 country maps, without any ads!&lt;/color&gt;&lt;/indent&gt;&#10;&#10;- &lt;indent=7%&gt;&lt;color=#4D9D59&gt;You can save the map-only image of your colored map!&lt;/color&gt;&lt;/indent&gt;" parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 50px; -unity-font-style: bold; white-space: normal; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
             </ui:ScrollView>
         </ui:VisualElement>
         <ui:VisualElement name="BtnContainer" style="flex-grow: 0; padding-top: 0; padding-right: 100px; padding-bottom: 150px; padding-left: 100px; margin-top: auto;">
