@@ -311,7 +311,7 @@ public class UITKController : Singleton<UITKController>
         Texture2D flagImage = Resources.Load<Texture2D>($"Images/Flags/{ctryName}");
         statsCountryPopup.Q("TitleFlag").style.backgroundImage = new StyleBackground(flagImage);
         statsCountryPopup.Q<Label>("Title").text = ctryName;
-        statsCountryPopup.Q<Label>("NumOfRegions").text = $"# of regions: {countrySO.mapSO.numRegions}";
+        statsCountryPopup.Q<Label>("Capital").text = $"Capital: {countrySO.capital}";
         string area = countrySO.area.ToString("N0"), population = countrySO.population.ToString("N0");
         statsCountryPopup.Q<Label>("Area").text = $"Area: {area} km^2({GameManager.Instance.GetAreaRank(ctryName)}/{GameManager.Instance.countryList.Count})";
         statsCountryPopup.Q<Label>("Population").text = $"Population: {population}({GameManager.Instance.GetPopulationRank(ctryName)}/{GameManager.Instance.countryList.Count})";
