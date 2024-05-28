@@ -32,6 +32,10 @@ public class GameManager : Singleton<GameManager>
         InitializeGame();
         AdManager.OnRewardedAdRewardedEvent += OnRewardedAdRewarded;
     }
+    void OnDisable()
+    {
+        AdManager.OnRewardedAdRewardedEvent -= OnRewardedAdRewarded;
+    }
     void Start()
     {
         mainCamera = Camera.main;
@@ -64,7 +68,7 @@ public class GameManager : Singleton<GameManager>
                     }
                     catch (Exception e)
                     {
-                        Debug.Log("Error at: " + ctrySO.ctryName + "index : " + i.ToString() + ", " + indexStr);
+                        Debug.LogError($"Error in {ctrySO.ctryName} at index {i}, {indexStr}: {e.Message}");
                     }
                 }
             }
@@ -95,6 +99,7 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefs.SetInt("VersionCode", 0);
             PlayerPrefs.SetString("CtryMapProgress", string.Empty);
             PlayerPrefs.SetInt("ClearCount", 0);
+            PlayerPrefs.Save(); // Ensure preferences are saved
         }
     }
     void OnRewardedAdRewarded()
@@ -102,7 +107,6 @@ public class GameManager : Singleton<GameManager>
         if (rewardCountrySO != null)
         {
             SetupCountry(rewardCountrySO);
-            UITKController.Instance.HideUISegment("flag-list");
         }
     }
     public void InitializeGame()
@@ -164,13 +168,16 @@ public class GameManager : Singleton<GameManager>
     }
     public void HandleMapTouch(float coordX, float coordY)
     {
+        if (regionsColor == null || regionsColor.Length == 0)
+        {
+            Debug.LogError("regionsColor is not initialized");
+            return;
+        }
         Vector2 touchPos = mainCamera.ScreenToWorldPoint(new Vector2(coordX, coordY));
         RaycastHit2D hit = Physics2D.Raycast(touchPos, Vector2.zero);
-
-        Debug.Log("HandleMapTouch");
         if (hit.collider != null && selectedColor.HasValue)
         {
-            Debug.Log("Hit");
+            // Debug.Log("Hit");
             if (int.TryParse(hit.collider.gameObject.name.Substring(6), out int targetIndex) && IsValidColoring(targetIndex))
             {
                 SpriteRenderer renderer = hit.collider.GetComponent<SpriteRenderer>();
@@ -316,7 +323,13 @@ public class GameManager : Singleton<GameManager>
     }
     void SetParticleSystemGradient(ThemeSO themeSO)
     {
-        var mainModule = GameObject.Find("Confetti").GetComponent<ParticleSystem>().main;
+        var confetti = GameObject.Find("Confetti");
+        if (confetti == null)
+        {
+            Debug.LogError("Confetti GameObject not found");
+            return;
+        }
+        var mainModule = confetti.GetComponent<ParticleSystem>().main;
 
         // Create a new gradient
         Gradient gradient = new Gradient();

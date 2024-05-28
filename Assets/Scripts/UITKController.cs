@@ -277,6 +277,10 @@ public class UITKController : Singleton<UITKController>
                 iapPopup.RemoveFromClassList("scale-to-zero"); // Show IAP Page
             }
         }
+        else
+        {
+            Debug.LogError("Invalid theme index in userData");
+        }
     }
     void OnChooseCtry(ClickEvent evt)
     {
