@@ -183,11 +183,21 @@ public class GameManager : Singleton<GameManager>
                 SpriteRenderer renderer = hit.collider.GetComponent<SpriteRenderer>();
                 if (renderer != null)
                 {
-                    renderer.color = selectedColor.Value;
-                    regionsColor[targetIndex] = selectedColor.Value;
-                    AudioController.Instance.PlayClip(sfxClipList[1]);
-                    UIFeedback.Instance.PlayHapticLight();
-                    CheckForColoringComplete();
+                    if (renderer.color == selectedColor.Value)
+                    {
+                        renderer.color = new Color(0.5f, 0.5f, 0.5f, 1);
+                        regionsColor[targetIndex] = new Color();
+                        AudioController.Instance.PlayClip(sfxClipList[1]);
+                        UIFeedback.Instance.PlayHapticLight();
+                    }
+                    else
+                    {
+                        renderer.color = selectedColor.Value;
+                        regionsColor[targetIndex] = selectedColor.Value;
+                        AudioController.Instance.PlayClip(sfxClipList[1]);
+                        UIFeedback.Instance.PlayHapticLight();
+                        CheckForColoringComplete();
+                    }
                 }
             }
             else
