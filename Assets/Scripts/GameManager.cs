@@ -264,7 +264,7 @@ public class GameManager : Singleton<GameManager>
         {
             return;
         }
-        if (ProfileManager.Instance.IsAppAdFree())
+        if (ProfileManager.Instance.IsAppAdFree() || IsMapCleared(countrySO))
         {
             SetupCountry(countrySO);
         }
